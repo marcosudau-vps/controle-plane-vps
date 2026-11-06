@@ -906,6 +906,7 @@ def subdomains_ui(db: Session = Depends(get_session)) -> HTMLResponse:
 </head>
 <body>
 <main>
+  <nav><a href="/management">Verwaltung</a></nav>
   <h1>Control Plane - Subdomains</h1>
   <div class="meta">Live aus der Control-Plane-Datenbank. Secrets werden nicht angezeigt.</div>
   <h2>Services / Subdomains</h2>
@@ -1236,3 +1237,6 @@ app.include_router(management_router)
 
 from .http_security import install as install_http_security
 install_http_security(app)
+
+from .management_ui import router as management_ui_router
+app.include_router(management_ui_router)
