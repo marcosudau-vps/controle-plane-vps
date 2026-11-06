@@ -4,7 +4,9 @@ import hashlib
 import json
 import os
 import shutil
+import socket
 import subprocess
+import tarfile
 import urllib.error
 import urllib.request
 from contextlib import contextmanager
@@ -49,19 +51,9 @@ def compose_command(compose_file: Path, *args: str) -> list[str]:
 
 @contextmanager
 def lifecycle_lock(slug: str, settings: Settings | None = None):
-    lock_dir = archive_root(settings) / ".locks"
-    lock_dir.mkdir(parents=True, exist_ok=True)
-    lock_path = lock_dir / f"{slug}.lock"
-    try:
-        fd = os.open(lock_path, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
-        os.write(fd, str(os.getpid()).encode("utf-8"))
-        os.close(fd)
-    except FileExistsError as exc:
-        raise HTTPException(status_code=409, detail=f"lifecycle operation already running for {slug}") from exc
-    try:
+    from control_plane.operations import operation_lock
+    with operation_lock(slug):
         yield
-    finally:
-        lock_path.unlink(missing_ok=True)
 
 
 def ensure_hash(current_plan: dict[str, Any], plan_hash: str) -> None:
@@ -122,12 +114,16 @@ def apply_path_metadata(target: Path, metadata: list[dict[str, Any]]) -> None:
         return
     for item in sorted(metadata, key=lambda row: str(row["path"]).count("/"), reverse=True):
         rel = item["path"]
+        if Path(rel).is_absolute() or ".." in Path(rel).parts:
+            raise HTTPException(status_code=409, detail="invalid archive path metadata")
         path = target if rel == "." else target / rel
+        if target.resolve() != path.resolve() and target.resolve() not in path.resolve().parents:
+            raise HTTPException(status_code=409, detail="archive metadata symlink escape")
         if not (path.exists() or path.is_symlink()):
             continue
         os.chown(path, int(item["uid"]), int(item["gid"]), follow_symlinks=False)
         if item.get("kind") != "symlink":
-            os.chmod(path, int(item["mode"]))
+            os.chmod(path, int(item["mode"]) & 0o777)
 
 
 def ignore_build_artifacts(_dir: str, names: list[str]) -> set[str]:
@@ -155,7 +151,8 @@ def create_archive_bundle(db: Session, slug: str, action: str, plan: dict[str, A
     settings = settings or get_settings()
     manifest = load_manifest(slug, settings=settings)
     payload = target_dir / "payload"
-    payload.mkdir(parents=True, exist_ok=True)
+    payload.mkdir(parents=True, exist_ok=True, mode=0o700)
+    target_dir.chmod(0o700)
     copied: list[dict[str, str]] = []
     path_metadata: dict[str, list[dict[str, Any]]] = {}
     for entry in path_inventory(manifest):
@@ -182,6 +179,7 @@ def create_archive_bundle(db: Session, slug: str, action: str, plan: dict[str, A
     write_json(target_dir / "checksums.json", checksums(payload))
     archive_path = target_dir / "archive.tar.zst"
     subprocess.run(["tar", "--zstd", "-cf", str(archive_path), "-C", str(target_dir), "payload"], check=True)
+    archive_path.chmod(0o600)
     return {"archive_id": archive_id, "archive_dir": str(target_dir), "archive_path": str(archive_path), "copied": copied}
 
 
@@ -277,12 +275,48 @@ def quarantine_paths(manifest: dict[str, Any], quarantine_dir: Path) -> list[dic
 
 def resolve_archive_dir(identifier: str | None = None, *, archive_dir: str | None = None, archive_path: str | None = None) -> Path:
     if archive_dir:
-        return Path(archive_dir)
-    if archive_path:
-        return Path(archive_path).parent
-    if not identifier:
-        raise HTTPException(status_code=400, detail="archive_id, archive_dir or archive_path is required")
-    return archive_root() / identifier
+        candidate = Path(archive_dir)
+    elif archive_path:
+        candidate = Path(archive_path).parent
+    elif identifier:
+        candidate = archive_root() / identifier
+    else:
+        raise HTTPException(status_code=400, detail="archive identifier required")
+    root = archive_root().resolve()
+    if ".." in candidate.parts or root not in candidate.resolve().parents:
+        raise HTTPException(status_code=422, detail="archive path outside configured archive root")
+    return candidate.resolve()
+
+
+def verify_archive_payload(directory: Path) -> None:
+    expected = json.loads((directory / "checksums.json").read_text())
+    root = (directory / "payload").resolve()
+    for rel in expected:
+        candidate = root / rel
+        if Path(rel).is_absolute() or ".." in Path(rel).parts or root not in candidate.resolve().parents:
+            raise HTTPException(status_code=409, detail="archive payload path or symlink escapes payload")
+    if (directory / "payload").exists() and checksums(directory / "payload") != expected:
+        raise HTTPException(status_code=409, detail="archive payload checksum mismatch")
+
+
+def extract_verified_payload(directory: Path) -> None:
+    # Two passes: reject unsafe members before any write, then extract using Python's data filter.
+    for extract in [False, True]:
+        process = subprocess.Popen(["zstd", "-dc", str(directory / "archive.tar.zst")], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+        try:
+            with tarfile.open(fileobj=process.stdout, mode="r|") as archive:
+                for member in archive:
+                    path = Path(member.name)
+                    if path.is_absolute() or ".." in path.parts or not path.parts or path.parts[0] != "payload" or not (member.isfile() or member.isdir()):
+                        raise HTTPException(status_code=409, detail="unsafe archive member")
+                    if extract:
+                        archive.extract(member, path=directory, filter="data")
+            if process.wait() != 0:
+                raise HTTPException(status_code=409, detail="archive decompression failed")
+        finally:
+            if process.poll() is None:process.kill()
+            process.wait()
+    verify_archive_payload(directory)
 
 
 def inspect_archive(identifier: str | None = None, *, archive_dir: str | None = None, archive_path: str | None = None) -> dict[str, Any]:
@@ -294,6 +328,24 @@ def inspect_archive(identifier: str | None = None, *, archive_dir: str | None = 
         path = directory / name
         if path.exists():
             payload[name.removesuffix(".json").replace("-", "_")] = json.loads(path.read_text(encoding="utf-8"))
+    if "restore_plan" not in payload or "checksums" not in payload:
+        raise HTTPException(status_code=409, detail="archive metadata is incomplete")
+    verify_archive_payload(directory)
+    slug = payload.get("manifest", {}).get("service_slug", "")
+    from control_plane.contracts import CORE_SERVICES
+    if slug in CORE_SERVICES or not slug or "/" in slug or ".." in slug:
+        raise HTTPException(status_code=409, detail="invalid or protected restore identity")
+    role_roots = {k: Path(get_settings().selfhost_root) / folder / "services" / slug for k,folder in {"stack_dir":"stacks", "data_dir":"data", "app_dir":"apps", "docs_dir":"docs", "config_file":"stacks"}.items()}
+    role_roots["build_area_dir"] = Path(get_settings().outsourced_build_area_root) / "services" / slug
+    role_roots["env_file"] = Path(get_settings().selfhost_root) / "secrets"
+    for item in payload["restore_plan"].get("targets", []):
+        target = Path(item["target"]).resolve()
+        allowed = role_roots.get(item.get("role"))
+        source = directory / item["payload_path"]
+        if allowed is None or not (target == allowed.resolve() or allowed.resolve() in target.parents):
+            raise HTTPException(status_code=409, detail="restore target outside service ownership")
+        if ".." in Path(item["payload_path"]).parts or (directory / "payload").resolve() not in source.resolve().parents:
+            raise HTTPException(status_code=409, detail="restore payload path escape")
     payload["archive_dir"] = str(directory)
     payload["archive_path"] = str(directory / "archive.tar.zst")
     return payload
@@ -355,6 +407,12 @@ def restore_db_state(db: Session, export: dict[str, Any]) -> str:
         (models.ApiEntity, export.get("apis", []), "id"),
         (models.Skill, export.get("skills", []), "id"),
         (models.SecretRef, export.get("secret_refs", []), "id"),
+        (models.Relation, export.get("relations", []), "id"),
+        (models.ServiceProfile, export.get("profiles", []), "service_id"),
+        (models.ServiceAlias, export.get("aliases", []), "alias"),
+        (models.DeploymentSource, export.get("deployment_sources", []), "id"),
+        (models.RouteOptions, export.get("route_options", []), "route_id"),
+        (models.PolicyRule, export.get("policies", []), "id"),
     ]:
         for row in rows:
             row = dict(row)
@@ -370,10 +428,11 @@ def restore_db_state(db: Session, export: dict[str, Any]) -> str:
                     setattr(obj, key, value)
             else:
                 db.add(model(**row))
+        db.flush()
     return service.slug
 
 
-def execute_restore(db: Session, archive_id: str, plan_hash: str) -> dict[str, Any]:
+def _execute_restore(db: Session, archive_id: str, plan_hash: str) -> dict[str, Any]:
     settings = get_settings()
     plan = plan_restore(archive_id)
     if plan["plan_hash"] != plan_hash:
@@ -383,7 +442,7 @@ def execute_restore(db: Session, archive_id: str, plan_hash: str) -> dict[str, A
     archive = inspect_archive(archive_id)
     directory = Path(archive["archive_dir"])
     if not (directory / "payload").exists() and (directory / "archive.tar.zst").exists():
-        subprocess.run(["tar", "--zstd", "-xf", str(directory / "archive.tar.zst"), "-C", str(directory)], check=True)
+        extract_verified_payload(directory)
     for target in plan.get("targets", []):
         source = directory / target["payload_path"]
         destination = Path(target["target"])
@@ -402,8 +461,10 @@ def execute_restore(db: Session, archive_id: str, plan_hash: str) -> dict[str, A
     manifest = load_manifest(slug, settings=settings)
     compose_file = Path(manifest["runtime"]["compose_file"])
     if settings.lifecycle_runtime_apply_enabled:
-        subprocess.run(compose_command(compose_file, "up", "-d"), check=True)
+        subprocess.run(compose_command(compose_file, "up", "-d", "--no-build", "--pull", "never"), check=True)
     healthcheck_results = run_healthchecks_for_service(db, slug) if settings.lifecycle_runtime_apply_enabled else []
+    if any(not item["passed"] for item in healthcheck_results):
+        raise HTTPException(status_code=409, detail="restored runtime failed health verification")
     result = {"archive_id": archive_id, "archive_dir": str(directory), "service_slug": slug, "restored_targets": [item["target"] for item in plan.get("targets", [])], "healthchecks": healthcheck_results}
     run = record_run(db, slug=slug, action="restore", status="completed", plan_hash=plan_hash, result=result)
     return {**result, "run_id": run.id}
@@ -438,6 +499,22 @@ def run_healthchecks_for_service(db: Session, slug: str) -> list[dict[str, Any]]
             except Exception as exc:
                 error = str(exc)
         elif check.check_type == "tcp":
-            error = "tcp healthcheck execution is not implemented in lifecycle restore v1"
+            from urllib.parse import urlsplit
+            try:
+                target = check.target if '://' in check.target else 'tcp://' + check.target
+                parsed = urlsplit(target)
+                if not parsed.hostname or not parsed.port:
+                    raise ValueError('TCP host and port required')
+                with socket.create_connection((parsed.hostname, parsed.port), timeout=check.timeout_seconds):
+                    passed = True
+            except (OSError, ValueError):
+                error = "TCP healthcheck failed"
         results.append({"id": check.id, "target": check.target, "check_type": check.check_type, "passed": passed, "error": error})
     return results
+
+
+def execute_restore(db: Session, archive_id: str, plan_hash: str) -> dict[str, Any]:
+    archive = inspect_archive(archive_id)
+    slug = archive['manifest']['service_slug']
+    with lifecycle_lock(slug):
+        return _execute_restore(db, archive_id, plan_hash)

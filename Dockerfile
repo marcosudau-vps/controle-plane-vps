@@ -13,10 +13,14 @@ RUN apt-get update \
 
 COPY --from=caddybin /usr/bin/caddy /usr/bin/caddy
 COPY pyproject.toml /app/pyproject.toml
+COPY requirements-runtime.lock /app/requirements-runtime.lock
 COPY control_plane /app/control_plane
+COPY alembic.ini /app/alembic.ini
+COPY migrations /app/migrations
 
 RUN pip install --no-cache-dir --upgrade pip \
-    && pip install --no-cache-dir .
+    && pip install --no-cache-dir -r requirements-runtime.lock \
+    && pip install --no-cache-dir --no-deps .
 
 EXPOSE 8765
 

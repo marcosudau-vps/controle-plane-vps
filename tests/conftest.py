@@ -39,3 +39,7 @@ def client() -> Generator[TestClient, None, None]:
     init_db()
     with TestClient(app, base_url="https://protected.marcosudau.com", headers={"Authorization": "Bearer test-token"}) as test_client:
         yield test_client
+
+
+# Shared isolated Docker fixture for management and browser tests.
+from management_fakes import managed as managed

@@ -32,7 +32,8 @@ def _json(obj: Any) -> str:
         if isinstance(o, datetime):
             return o.isoformat()
         return str(o)
-    return json.dumps(obj, default=ser, indent=2, sort_keys=True)
+    from control_plane.redaction import clean
+    return json.dumps(clean(obj), default=ser, indent=2, sort_keys=True)
 
 
 # ============ Tool Implementations ============
@@ -180,7 +181,11 @@ def tool_agent_context(slug: str) -> str:
     if not svc:
         db.close()
         return _json({"error": f"service not found: {slug}"})
+    from control_plane.contracts import service_contract
+    from control_plane.policies import effective_rules
     ctx = {
+        "contract": service_contract(db, svc),
+        "policies": effective_rules(db, svc),
         "service": {c.name: getattr(svc, c.name) for c in svc.__table__.columns},
         "routes": [
             {**{c.name: getattr(r, c.name) for c in r.__table__.columns}, "rendered_host": render_domain_value(r.host)}
@@ -188,12 +193,32 @@ def tool_agent_context(slug: str) -> str:
         ],
         "rules": [
             "Use control-plane or the Control Plane for changes.",
-            "Do not edit generated Caddy or Backstage files manually.",
-            "Do not store secret values in docs, Backstage, exports, or git.",
+            "Do not edit generated Caddy files manually.",
+            "Do not store secret values in docs, exports, or git.",
         ],
     }
     db.close()
     return _json(ctx)
+
+
+def tool_service_contract(slug: str) -> str:
+    from control_plane.cli import request
+    return _json(request('GET', f'/api/v1/services/{slug}/contract'))
+
+
+def tool_runtime_status(slug: str) -> str:
+    from control_plane.cli import request
+    return _json(request('GET', f'/api/v1/services/{slug}/runtime/status'))
+
+
+def tool_operation_plan(slug: str, runtime_id: str, action: str, idempotency_key: str) -> str:
+    from control_plane.cli import request
+    return _json(request('POST', f'/api/v1/services/{slug}/operations/plan', {'runtime_id':runtime_id,'action':action,'idempotency_key':idempotency_key}))
+
+
+def tool_operation_execute(operation_id: str, plan_hash: str, approved: bool = False) -> str:
+    from control_plane.cli import request
+    return _json(request('POST', f'/api/v1/operations/{operation_id}/execute', {'plan_hash':plan_hash,'approved':approved}))
 
 
 # ============ MCP Server Setup ============
@@ -286,6 +311,14 @@ TOOL_MAP: dict[str, dict[str, Any]] = {
         "func": tool_set_route_caddy_schutz,
     },
 }
+
+
+TOOL_MAP.update({
+    'service_contract': {'description':'Read the canonical technical contract through the API', 'input_schema':{'type':'object','properties':{'slug':{'type':'string'}},'required':['slug']},'func':tool_service_contract},
+    'runtime_status': {'description':'Observe desired and live runtime states through the API', 'input_schema':{'type':'object','properties':{'slug':{'type':'string'}},'required':['slug']},'func':tool_runtime_status},
+    'operation_plan': {'description':'Create a scoped, validated operation plan; no execution', 'input_schema':{'type':'object','properties':{k:{'type':'string'} for k in ['slug','runtime_id','action','idempotency_key']},'required':['slug','runtime_id','action','idempotency_key']},'func':tool_operation_plan},
+    'operation_execute': {'description':'Execute an explicitly approved immutable plan', 'input_schema':{'type':'object','properties':{'operation_id':{'type':'string'},'plan_hash':{'type':'string'},'approved':{'type':'boolean'}},'required':['operation_id','plan_hash']},'func':tool_operation_execute},
+})
 
 
 def handle_mcp_request(request: dict) -> dict:

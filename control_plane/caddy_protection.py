@@ -88,8 +88,7 @@ def _cookie_secret() -> str:
     settings = get_settings()
     secret = settings.caddy_protection_cookie_secret or settings.api_token
     if not secret:
-        # Development fallback only; production validation warns when cookie auth is enabled without a stable secret.
-        secret = "control-plane-development-cookie-secret"
+        raise ValueError("cookie authentication requires a configured signing secret")
     return secret
 
 
@@ -112,18 +111,27 @@ def verify_session_cookie(value: str | None) -> AuthResult:
     if not value or "." not in value:
         return AuthResult(False)
     payload_text, signature = value.rsplit(".", 1)
-    if not hmac.compare_digest(signature, _sign(payload_text)):
+    try:
+        expected = _sign(payload_text)
+    except ValueError:
+        return AuthResult(False)
+    if not hmac.compare_digest(signature, expected):
         return AuthResult(False)
     try:
         payload = json.loads(base64.urlsafe_b64decode(payload_text.encode("ascii")).decode("utf-8"))
     except (ValueError, json.JSONDecodeError):
         return AuthResult(False)
+    if not isinstance(payload, dict):
+        return AuthResult(False)
     if payload.get("v") != COOKIE_VERSION:
         return AuthResult(False)
-    if int(payload.get("exp", 0)) < int(time.time()):
+    try:
+        if int(payload.get("exp", 0)) < int(time.time()):
+            return AuthResult(False)
+    except (TypeError, ValueError):
         return AuthResult(False)
     username = str(payload.get("u", ""))
-    if not username:
+    if not username or username not in configured_logins():
         return AuthResult(False)
     return AuthResult(True, "cookie", username)
 

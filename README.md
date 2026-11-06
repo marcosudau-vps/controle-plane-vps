@@ -33,4 +33,16 @@ Produktiv laeuft die Control Plane als Docker-Container `control-plane` im Found
 /home/marco/selfhost/stacks/services/control-plane
 ```
 
-Der Container bindet lokal auf `127.0.0.1:8765`; Caddy routet die Subdomains-Web-UI darueber.
+Die API lauscht im Container auf Port `8765`. Der veröffentlichte Hostport hängt von
+der Compose-Konfiguration ab; `CP_API_URL` für CLI/MCP explizit auf die tatsächliche
+Adresse setzen. Caddy routet die Subdomain-Weboberfläche.
+
+## Modernisierungskandidat
+
+Version 0.2 ergänzt die bestehende Anwendung. Aktuelle Entwickler-, API-, Contract-,
+Migrations- und Testreferenz: [docs/control-plane-modernization](docs/control-plane-modernization/README.md).
+
+Die obigen historischen Betriebs-/Buildpfade beschreiben den ursprünglichen Bestand.
+Für Entwicklung und Tests eine isolierte Konfiguration verwenden; keine Build-Skripte
+gegen das produktive Verzeichnis aufrufen. Neue Runtimeausführung ist standardmäßig
+abgeschaltet. Es wird durch dieses Repository kein Deployment oder Merge ausgelöst.

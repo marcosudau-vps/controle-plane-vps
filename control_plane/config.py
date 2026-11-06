@@ -26,6 +26,10 @@ _ENV_TYPES: dict[str, type] = {
     "caddy_protection_cookie_max_age_seconds": int,
     "large_port_space": bool,
     "lifecycle_runtime_apply_enabled": bool,
+    "runtime_apply_enabled": bool,
+    "operation_timeout_seconds": int,
+    "minimum_available_memory_mib": int,
+    "max_pending_operations": int,
 }
 
 
@@ -66,6 +70,16 @@ class Settings:
     caddy_protection_cookie_domain: str = ""
     lifecycle_archive_root: str = "/home/marco/selfhost/backups/service-lifecycle"
     lifecycle_runtime_apply_enabled: bool = True
+    runtime_apply_enabled: bool = False
+    operation_timeout_seconds: int = 900
+    minimum_available_memory_mib: int = 256
+    max_pending_operations: int = 20
+    operations_dir: str = ""
+    # JSON configured by the administrator, never returned by the API.
+    scoped_tokens: str = "{}"
+    portal_roles: str = "{}"
+    build_workflows: str = "{}"
+    caddy_override_dir: str = ""
 
     def __init__(self, **kwargs: Any) -> None:
         for key, value in kwargs.items():

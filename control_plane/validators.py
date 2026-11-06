@@ -42,7 +42,7 @@ def _result(severity: str, code: str, message: str, entity_kind: str = "", entit
 
 def _render_caddy_host(raw_host: str) -> str:
     legacy_token = "{$" + "SELFHOST" + "_CONTROL_PUBLIC_BASE_DOMAIN}"
-    return raw_host.strip().replace(legacy_token, render_domain_value("{base_domain}"))
+    return raw_host.strip().replace(legacy_token, render_domain_value("{base_domain}")).replace("{$CP_PUBLIC_BASE_DOMAIN}", render_domain_value("{base_domain}")).replace("{base_domain}", render_domain_value("{base_domain}"))
 
 
 def _caddy_hosts_from_file(path: Path) -> set[str]:
@@ -61,19 +61,18 @@ def _caddy_hosts_from_file(path: Path) -> set[str]:
             continue
         for host in match.group(1).split(","):
             rendered = _render_caddy_host(host).strip()
-            if rendered.startswith("*."):
-                continue
             if rendered and "." in rendered and "{" not in rendered and "$" not in rendered:
                 hosts.add(rendered)
     return hosts
 
 
-def configured_caddy_hosts() -> set[str]:
+def configured_caddy_hosts(*, include_generated: bool = True) -> set[str]:
     settings = get_settings()
     files: list[Path] = []
-    files.extend(path for path in Path(settings.generated_caddy_dir).glob("*.caddy") if path.name != "auto_cert_zones.caddy")
-    override_dir = Path(settings.selfhost_root) / "infra" / "caddy" / "overrides"
-    files.extend(path for path in override_dir.glob("*.caddy") if ".bak" not in path.name and not path.name.startswith("."))
+    if include_generated:
+        files.extend(path for path in Path(settings.generated_caddy_dir).glob("*.caddy") if path.name != "auto_cert_zones.caddy")
+    from .routing import override_files
+    files.extend(override_files())
     hosts: set[str] = set()
     for path in files:
         hosts.update(_caddy_hosts_from_file(path))
@@ -98,7 +97,7 @@ def validate_all(db: Session, scope: str = "all") -> list[dict]:
         if login_count == 0 and api_key_count == 0:
             results.append(_result("warning", "caddy_schutz.credentials.missing", "Caddy-Schutz is enabled but no logins or API keys are configured", "config", ""))
         if settings.caddy_protection_cookie_enabled and not (settings.caddy_protection_cookie_secret or settings.api_token):
-            results.append(_result("warning", "caddy_schutz.cookie_secret.missing", "Cookie auth uses the development fallback secret; configure CP_CADDY_PROTECTION_COOKIE_SECRET in production", "config", ""))
+            results.append(_result("warning", "caddy_schutz.cookie_secret.missing", "Cookie authentication is unavailable; configure CP_CADDY_PROTECTION_COOKIE_SECRET in production", "config", ""))
 
     for service in services:
         if not SERVICE_RE.match(service.slug):
@@ -130,12 +129,13 @@ def validate_all(db: Session, scope: str = "all") -> list[dict]:
     registered_hosts: set[str] = set()
     for route in db.query(models.Route).all():
         rendered_host = render_domain_value(route.host)
-        registered_hosts.add(rendered_host)
+        from .routing import route_hosts
+        registered_hosts.update(route_hosts(db, route))
         key = (rendered_host, route.path)
         if key in route_keys:
             results.append(_result("fatal", "route.duplicate", f"Duplicate route {rendered_host}{route.path}", "route", route.id))
         route_keys.add(key)
-        if not HOST_RE.match(rendered_host):
+        if not HOST_RE.match(rendered_host.removeprefix("*.")):
             results.append(_result("error", "route.host.invalid", f"Invalid route host: {route.host} -> {rendered_host}", "route", route.id))
         if "." in route.host and not is_domain_template(route.host) and route.host.endswith("marcosudau.com"):
             results.append(_result("warning", "route.host.fixed-target-domain", f"Route uses target domain directly during development: {route.host}", "route", route.id))
@@ -153,7 +153,7 @@ def validate_all(db: Session, scope: str = "all") -> list[dict]:
         if parsed.scheme not in {"http", "https"} or not parsed.netloc:
             results.append(_result("error", "route.upstream.invalid", f"Invalid upstream for {route.host}: {route.upstream}", "route", route.id))
 
-    for caddy_host in sorted(configured_caddy_hosts() - registered_hosts):
+    for caddy_host in sorted(configured_caddy_hosts(include_generated=scope != "caddy-apply") - registered_hosts):
         results.append(_result("fatal", "route.registry.missing", f"Caddy host is not registered in Control Plane routes: {caddy_host}", "route", ""))
 
     port_keys: set[tuple[int, str]] = set()
@@ -201,6 +201,9 @@ def validate_all(db: Session, scope: str = "all") -> list[dict]:
         if not doc.path.startswith("/"):
             results.append(_result("warning", "doc.path.relative", f"Doc path is relative: {doc.path}", "doc", doc.id))
 
+    from .routing import ownership_findings
+    for item in ownership_findings(db):
+        results.append(_result("fatal", item["code"], item["message"], "route", item["route_id"]))
     return results
 
 

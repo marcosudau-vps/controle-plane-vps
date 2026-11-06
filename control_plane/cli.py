@@ -394,5 +394,32 @@ def agent_context(slug: str) -> None:
     emit(request("GET", f"/api/v1/agent-context/{slug}"))
 
 
+
+
+@service_app.command('contract')
+def service_contract(slug: str) -> None:
+    emit(request('GET', f'/api/v1/services/{slug}/contract'))
+
+
+@runtime_app.command('status')
+def runtime_status(slug: str) -> None:
+    emit(request('GET', f'/api/v1/services/{slug}/runtime/status'))
+
+
+@runtime_app.command('plan')
+def runtime_plan(slug: str, runtime_id: str, action: str, idempotency_key: str, autostart_policy: str | None = None, release_id: str | None = None) -> None:
+    emit(request('POST', f'/api/v1/services/{slug}/operations/plan', {'runtime_id':runtime_id,'action':action,'idempotency_key':idempotency_key,'autostart_policy':autostart_policy,'release_id':release_id}))
+
+
+@runtime_app.command('execute')
+def runtime_execute(operation_id: str, plan_hash: str, approved: bool = False) -> None:
+    emit(request('POST', f'/api/v1/operations/{operation_id}/execute', {'plan_hash':plan_hash,'approved':approved}))
+
+
+@runtime_app.command('operation')
+def runtime_operation(operation_id: str) -> None:
+    emit(request('GET', f'/api/v1/operations/{operation_id}'))
+
+
 if __name__ == "__main__":
     app()

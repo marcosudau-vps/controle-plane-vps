@@ -1,0 +1,29 @@
+# Tatsächliche ORM-Tabellen
+
+- `services`: id, slug, title, summary, system, component_type, lifecycle, owner, criticality, status, tags, metadata_json, port_base, large_port_space, caddy_protection_enabled, created_at, updated_at
+- `sub_services`: id, slug, title, parent_type, parent_id, status, metadata_json, caddy_protection_enabled, created_at, updated_at
+- `routes`: id, service_id, subservice_id, parent_type, parent_id, host, path, upstream, tls, auth_policy, caddy_protection_enabled, status, created_at, updated_at
+- `ports`: id, service_id, number, protocol, bind, purpose, status, created_at, updated_at
+- `runtimes`: id, service_id, runtime_type, path, compose_project, systemd_unit, restart_policy, desired_state, autostart_policy, metadata_json, created_at, updated_at
+- `resources`: id, service_id, slug, title, resource_type, owner, metadata_json, created_at, updated_at
+- `apis`: id, service_id, slug, title, api_type, definition_path, created_at, updated_at
+- `skills`: id, service_id, slug, title, skill_type, path, description, created_at, updated_at
+- `skill_items`: id, skill_id, relative_path, item_type, created_at, updated_at
+- `secret_refs`: id, service_id, name, provider, ref, target_env, created_at, updated_at
+- `docs`: id, service_id, doc_type, path, title, created_at, updated_at
+- `healthchecks`: id, service_id, check_type, target, expected_status, timeout_seconds, created_at, updated_at
+- `relations`: id, source_kind, source_id, relation_type, target_kind, target_id, created_at, updated_at
+- `validation_runs`: id, scope, status, created_at, updated_at
+- `validation_results`: id, run_id, severity, code, message, entity_kind, entity_id, created_at, updated_at
+- `generated_artifacts`: id, artifact_type, path, status, checksum, created_at, updated_at
+- `activity_log`: id, created_at, actor, action, entity_kind, entity_id, detail
+- `comments`: id, entity_kind, entity_id, body, author, created_at, updated_at
+- `export_runs`: id, created_at, export_type, path, status
+- `lifecycle_runs`: id, service_slug, action, status, plan_hash, archive_dir, archive_path, quarantine_dir, request_json, result_json, error, created_at, updated_at
+- `service_profiles`: service_id, revision, description, category, protected, archivable, snapshot_supported, paths, created_at, updated_at
+- `service_aliases`: alias, service_id
+- `deployment_sources`: id, runtime_id, compose_service, source_kind, image_ref, workflow_id, created_at, updated_at
+- `operation_runs`: id, service_id, runtime_id, actor, action, status, active_key, idempotency_key, plan_hash, plan, result, events, error, expires_at, created_at, updated_at
+- `deployment_releases`: id, operation_id, runtime_id, previous_images, images, compose_checksum, status, created_at, updated_at
+- `policy_rules`: id, rule_id, version, service_id, severity, actions, message, owner, created_at, updated_at
+- `route_options`: route_id, host_aliases, upstream_headers, response_headers, tls_profile, owner_kind, owner_ref, created_at, updated_at

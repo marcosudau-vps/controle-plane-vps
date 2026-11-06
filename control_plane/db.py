@@ -1,4 +1,5 @@
 from collections.abc import Generator
+import re
 
 from sqlalchemy import create_engine, event, inspect, text
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
@@ -42,10 +43,19 @@ SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False, expi
 def init_db() -> None:
     from . import models  # noqa: F401
 
+    schema = get_settings().db_schema
+    if not re.fullmatch(r"[a-z_][a-z0-9_]*", schema):
+        raise RuntimeError("invalid database schema name")
     if engine.url.get_backend_name() == "postgresql":
-        schema = get_settings().db_schema
-        with engine.begin() as connection:
-            connection.execute(text(f'CREATE SCHEMA IF NOT EXISTS "{schema}"'))
+        with engine.connect() as connection:
+            inspector = inspect(connection)
+            if not inspector.has_table("alembic_version", schema=schema):
+                raise RuntimeError("database requires verified Alembic baseline and upgrade to 0002")
+            revision = connection.execute(text("SELECT version_num FROM alembic_version")).scalar()
+            if revision != "0002":
+                raise RuntimeError("database schema mismatch: run reviewed migrations to 0002")
+        return
+    # SQLite is the isolated development/test bootstrap. PostgreSQL never auto-migrates.
     Base.metadata.create_all(bind=engine)
     ensure_schema_compatibility()
 
