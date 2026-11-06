@@ -1,0 +1,15 @@
+# Non-secret example. Supply credentials through protected deployment configuration.
+db_schema: selfhost
+selfhost_root: /srv/selfhost-test
+outsourced_build_area_root: /srv/build-area-test
+generated_caddy_dir: /srv/selfhost-test/data/services/control-plane/generated/caddy
+lifecycle_archive_root: /srv/selfhost-test/backups/service-lifecycle
+runtime_apply_enabled: false
+caddy_reload_enabled: false
+caddy_auto_cert_enabled: false
+operation_timeout_seconds: 900
+minimum_available_memory_mib: 256
+max_pending_operations: 20
+scoped_tokens: '{}'
+portal_roles: '{}'
+build_workflows: '{}'

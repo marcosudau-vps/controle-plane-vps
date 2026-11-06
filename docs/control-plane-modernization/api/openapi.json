@@ -1,0 +1,7139 @@
+{
+  "components": {
+    "schemas": {
+      "AliasInput": {
+        "additionalProperties": false,
+        "properties": {
+          "alias": {
+            "maxLength": 80,
+            "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+            "title": "Alias",
+            "type": "string"
+          }
+        },
+        "required": [
+          "alias"
+        ],
+        "title": "AliasInput",
+        "type": "object"
+      },
+      "ApiEntityCreate": {
+        "properties": {
+          "api_type": {
+            "default": "openapi",
+            "title": "Api Type",
+            "type": "string"
+          },
+          "definition_path": {
+            "default": "",
+            "title": "Definition Path",
+            "type": "string"
+          },
+          "service_slug": {
+            "title": "Service Slug",
+            "type": "string"
+          },
+          "slug": {
+            "pattern": "^[a-z0-9][a-z0-9-]{1,78}[a-z0-9]$",
+            "title": "Slug",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "service_slug",
+          "slug",
+          "title"
+        ],
+        "title": "ApiEntityCreate",
+        "type": "object"
+      },
+      "ApiResponse": {
+        "properties": {
+          "data": {
+            "title": "Data"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "ok": {
+            "default": true,
+            "title": "Ok",
+            "type": "boolean"
+          }
+        },
+        "title": "ApiResponse",
+        "type": "object"
+      },
+      "Body_caddy_schutz_login_caddy_schutz_login_post": {
+        "properties": {
+          "next": {
+            "default": "/",
+            "title": "Next",
+            "type": "string"
+          },
+          "password": {
+            "title": "Password",
+            "type": "string"
+          },
+          "remember": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Remember"
+          },
+          "username": {
+            "title": "Username",
+            "type": "string"
+          }
+        },
+        "required": [
+          "username",
+          "password"
+        ],
+        "title": "Body_caddy_schutz_login_caddy_schutz_login_post",
+        "type": "object"
+      },
+      "CaddyCertZoneRequest": {
+        "properties": {
+          "domain": {
+            "maxLength": 253,
+            "minLength": 3,
+            "title": "Domain",
+            "type": "string"
+          },
+          "exclude_root_zone": {
+            "default": false,
+            "title": "Exclude Root Zone",
+            "type": "boolean"
+          },
+          "max_new_zones_per_run": {
+            "default": 5,
+            "maximum": 50.0,
+            "minimum": 0.0,
+            "title": "Max New Zones Per Run",
+            "type": "integer"
+          },
+          "max_total_zones_per_root": {
+            "default": 30,
+            "maximum": 200.0,
+            "minimum": 1.0,
+            "title": "Max Total Zones Per Root",
+            "type": "integer"
+          },
+          "no_reload": {
+            "default": false,
+            "title": "No Reload",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "domain"
+        ],
+        "title": "CaddyCertZoneRequest",
+        "type": "object"
+      },
+      "CaddyProtectionUpdate": {
+        "properties": {
+          "enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enabled"
+          }
+        },
+        "title": "CaddyProtectionUpdate",
+        "type": "object"
+      },
+      "CommentCreate": {
+        "properties": {
+          "author": {
+            "default": "marco",
+            "title": "Author",
+            "type": "string"
+          },
+          "body": {
+            "title": "Body",
+            "type": "string"
+          },
+          "entity_id": {
+            "title": "Entity Id",
+            "type": "string"
+          },
+          "entity_kind": {
+            "title": "Entity Kind",
+            "type": "string"
+          }
+        },
+        "required": [
+          "entity_kind",
+          "entity_id",
+          "body"
+        ],
+        "title": "CommentCreate",
+        "type": "object"
+      },
+      "DependencyInput": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "default": "hard",
+            "enum": [
+              "hard",
+              "optional"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "target_slug": {
+            "title": "Target Slug",
+            "type": "string"
+          }
+        },
+        "required": [
+          "target_slug"
+        ],
+        "title": "DependencyInput",
+        "type": "object"
+      },
+      "DocCreate": {
+        "properties": {
+          "doc_type": {
+            "title": "Doc Type",
+            "type": "string"
+          },
+          "path": {
+            "title": "Path",
+            "type": "string"
+          },
+          "service_slug": {
+            "title": "Service Slug",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "service_slug",
+          "doc_type",
+          "path",
+          "title"
+        ],
+        "title": "DocCreate",
+        "type": "object"
+      },
+      "Envelope_OperationOut_": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/OperationOut"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "ok": {
+            "default": true,
+            "title": "Ok",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "title": "Envelope[OperationOut]",
+        "type": "object"
+      },
+      "Envelope_TechnicalContract_": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/TechnicalContract"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "ok": {
+            "default": true,
+            "title": "Ok",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "title": "Envelope[TechnicalContract]",
+        "type": "object"
+      },
+      "Envelope_list_OperationOut__": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/OperationOut"
+            },
+            "title": "Data",
+            "type": "array"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "ok": {
+            "default": true,
+            "title": "Ok",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "title": "Envelope[list[OperationOut]]",
+        "type": "object"
+      },
+      "Envelope_list_RuntimeObservation__": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/RuntimeObservation"
+            },
+            "title": "Data",
+            "type": "array"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "ok": {
+            "default": true,
+            "title": "Ok",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "title": "Envelope[list[RuntimeObservation]]",
+        "type": "object"
+      },
+      "ExecuteInput": {
+        "additionalProperties": false,
+        "properties": {
+          "approved": {
+            "default": false,
+            "title": "Approved",
+            "type": "boolean"
+          },
+          "plan_hash": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Plan Hash",
+            "type": "string"
+          }
+        },
+        "required": [
+          "plan_hash"
+        ],
+        "title": "ExecuteInput",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "HealthcheckCreate": {
+        "properties": {
+          "check_type": {
+            "default": "http",
+            "title": "Check Type",
+            "type": "string"
+          },
+          "expected_status": {
+            "default": 200,
+            "title": "Expected Status",
+            "type": "integer"
+          },
+          "service_slug": {
+            "title": "Service Slug",
+            "type": "string"
+          },
+          "target": {
+            "title": "Target",
+            "type": "string"
+          },
+          "timeout_seconds": {
+            "default": 5,
+            "title": "Timeout Seconds",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "service_slug",
+          "target"
+        ],
+        "title": "HealthcheckCreate",
+        "type": "object"
+      },
+      "LifecycleArchiveInspectRequest": {
+        "properties": {
+          "archive_dir": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Archive Dir"
+          },
+          "archive_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Archive Id"
+          },
+          "archive_path": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Archive Path"
+          }
+        },
+        "title": "LifecycleArchiveInspectRequest",
+        "type": "object"
+      },
+      "LifecycleExecuteRequest": {
+        "properties": {
+          "plan_hash": {
+            "maxLength": 128,
+            "minLength": 16,
+            "title": "Plan Hash",
+            "type": "string"
+          }
+        },
+        "required": [
+          "plan_hash"
+        ],
+        "title": "LifecycleExecuteRequest",
+        "type": "object"
+      },
+      "ManagedServiceProvisionCreate": {
+        "properties": {
+          "caddy_protection_enabled": {
+            "default": false,
+            "title": "Caddy Protection Enabled",
+            "type": "boolean"
+          },
+          "component_type": {
+            "default": "service",
+            "title": "Component Type",
+            "type": "string"
+          },
+          "compose_project": {
+            "default": "",
+            "title": "Compose Project",
+            "type": "string"
+          },
+          "criticality": {
+            "default": 3,
+            "maximum": 5.0,
+            "minimum": 1.0,
+            "title": "Criticality",
+            "type": "integer"
+          },
+          "doc_path": {
+            "default": "",
+            "title": "Doc Path",
+            "type": "string"
+          },
+          "doc_title": {
+            "default": "",
+            "title": "Doc Title",
+            "type": "string"
+          },
+          "healthcheck_expected_status": {
+            "default": 200,
+            "title": "Healthcheck Expected Status",
+            "type": "integer"
+          },
+          "healthcheck_target": {
+            "default": "",
+            "title": "Healthcheck Target",
+            "type": "string"
+          },
+          "lifecycle": {
+            "default": "production",
+            "title": "Lifecycle",
+            "type": "string"
+          },
+          "metadata_json": {
+            "additionalProperties": true,
+            "title": "Metadata Json",
+            "type": "object"
+          },
+          "owner": {
+            "default": "marco",
+            "title": "Owner",
+            "type": "string"
+          },
+          "port": {
+            "anyOf": [
+              {
+                "maximum": 65535.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Port"
+          },
+          "runtime_path": {
+            "default": "",
+            "title": "Runtime Path",
+            "type": "string"
+          },
+          "runtime_type": {
+            "default": "docker-compose",
+            "title": "Runtime Type",
+            "type": "string"
+          },
+          "slug": {
+            "pattern": "^[a-z0-9][a-z0-9-]{1,78}[a-z0-9]$",
+            "title": "Slug",
+            "type": "string"
+          },
+          "subdomain": {
+            "pattern": "^[a-z0-9][a-z0-9-]{1,78}[a-z0-9]$",
+            "title": "Subdomain",
+            "type": "string"
+          },
+          "summary": {
+            "default": "",
+            "title": "Summary",
+            "type": "string"
+          },
+          "system": {
+            "default": "services",
+            "title": "System",
+            "type": "string"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Tags",
+            "type": "array"
+          },
+          "title": {
+            "maxLength": 160,
+            "minLength": 2,
+            "title": "Title",
+            "type": "string"
+          },
+          "upstream": {
+            "title": "Upstream",
+            "type": "string"
+          }
+        },
+        "required": [
+          "slug",
+          "title",
+          "subdomain",
+          "upstream"
+        ],
+        "title": "ManagedServiceProvisionCreate",
+        "type": "object"
+      },
+      "MetadataInput": {
+        "additionalProperties": false,
+        "properties": {
+          "plan_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Hash"
+          },
+          "profile_yaml": {
+            "additionalProperties": true,
+            "title": "Profile Yaml",
+            "type": "object"
+          },
+          "resolutions": {
+            "additionalProperties": {
+              "enum": [
+                "database",
+                "service_yaml",
+                "profile_yaml"
+              ],
+              "type": "string"
+            },
+            "title": "Resolutions",
+            "type": "object"
+          },
+          "service_yaml": {
+            "additionalProperties": true,
+            "title": "Service Yaml",
+            "type": "object"
+          }
+        },
+        "title": "MetadataInput",
+        "type": "object"
+      },
+      "OperationInput": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "enum": [
+              "start",
+              "stop",
+              "restart",
+              "autostart",
+              "pull",
+              "build",
+              "deploy",
+              "update",
+              "rollback"
+            ],
+            "title": "Action",
+            "type": "string"
+          },
+          "autostart_policy": {
+            "anyOf": [
+              {
+                "enum": [
+                  "always",
+                  "on_demand",
+                  "disabled"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Autostart Policy"
+          },
+          "idempotency_key": {
+            "maxLength": 120,
+            "minLength": 8,
+            "pattern": "^[A-Za-z0-9_.:-]+$",
+            "title": "Idempotency Key",
+            "type": "string"
+          },
+          "release_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Release Id"
+          },
+          "runtime_id": {
+            "title": "Runtime Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "action",
+          "runtime_id",
+          "idempotency_key"
+        ],
+        "title": "OperationInput",
+        "type": "object"
+      },
+      "OperationOut": {
+        "properties": {
+          "action": {
+            "enum": [
+              "start",
+              "stop",
+              "restart",
+              "autostart",
+              "pull",
+              "build",
+              "deploy",
+              "update",
+              "rollback"
+            ],
+            "title": "Action",
+            "type": "string"
+          },
+          "active_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Active Key"
+          },
+          "actor": {
+            "title": "Actor",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "error": {
+            "title": "Error",
+            "type": "string"
+          },
+          "events": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Events",
+            "type": "array"
+          },
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "idempotency_key": {
+            "title": "Idempotency Key",
+            "type": "string"
+          },
+          "plan": {
+            "additionalProperties": true,
+            "title": "Plan",
+            "type": "object"
+          },
+          "plan_hash": {
+            "title": "Plan Hash",
+            "type": "string"
+          },
+          "result": {
+            "additionalProperties": true,
+            "title": "Result",
+            "type": "object"
+          },
+          "runtime_id": {
+            "title": "Runtime Id",
+            "type": "string"
+          },
+          "service_id": {
+            "title": "Service Id",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "planned",
+              "queued",
+              "running",
+              "completed",
+              "failed",
+              "interrupted"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "service_id",
+          "runtime_id",
+          "actor",
+          "action",
+          "status",
+          "active_key",
+          "idempotency_key",
+          "plan_hash",
+          "plan",
+          "result",
+          "events",
+          "error",
+          "expires_at",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "OperationOut",
+        "type": "object"
+      },
+      "PolicyCheck": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "enum": [
+              "start",
+              "stop",
+              "restart",
+              "autostart",
+              "pull",
+              "build",
+              "deploy",
+              "update",
+              "rollback"
+            ],
+            "title": "Action",
+            "type": "string"
+          }
+        },
+        "required": [
+          "action"
+        ],
+        "title": "PolicyCheck",
+        "type": "object"
+      },
+      "PortCreate": {
+        "properties": {
+          "bind": {
+            "default": "127.0.0.1",
+            "title": "Bind",
+            "type": "string"
+          },
+          "number": {
+            "maximum": 65535.0,
+            "minimum": 1.0,
+            "title": "Number",
+            "type": "integer"
+          },
+          "protocol": {
+            "default": "tcp",
+            "title": "Protocol",
+            "type": "string"
+          },
+          "purpose": {
+            "default": "",
+            "title": "Purpose",
+            "type": "string"
+          },
+          "service_slug": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Service Slug"
+          },
+          "status": {
+            "default": "active",
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "number"
+        ],
+        "title": "PortCreate",
+        "type": "object"
+      },
+      "PortUpdate": {
+        "additionalProperties": false,
+        "description": "Move or reassign one registered port while preserving its ID.",
+        "properties": {
+          "number": {
+            "anyOf": [
+              {
+                "maximum": 65535.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Number"
+          },
+          "purpose": {
+            "anyOf": [
+              {
+                "maxLength": 160,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Purpose"
+          },
+          "service_slug": {
+            "anyOf": [
+              {
+                "pattern": "^[a-z0-9][a-z0-9-]{1,78}[a-z0-9]$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Service Slug"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          }
+        },
+        "title": "PortUpdate",
+        "type": "object"
+      },
+      "ProfileUpdate": {
+        "additionalProperties": false,
+        "properties": {
+          "archivable": {
+            "default": false,
+            "title": "Archivable",
+            "type": "boolean"
+          },
+          "category": {
+            "default": "",
+            "maxLength": 80,
+            "title": "Category",
+            "type": "string"
+          },
+          "description": {
+            "default": "",
+            "maxLength": 20000,
+            "title": "Description",
+            "type": "string"
+          },
+          "expected_revision": {
+            "minimum": 0.0,
+            "title": "Expected Revision",
+            "type": "integer"
+          },
+          "paths": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                }
+              ]
+            },
+            "title": "Paths",
+            "type": "object"
+          },
+          "protected": {
+            "default": false,
+            "title": "Protected",
+            "type": "boolean"
+          },
+          "snapshot_supported": {
+            "default": true,
+            "title": "Snapshot Supported",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "expected_revision"
+        ],
+        "title": "ProfileUpdate",
+        "type": "object"
+      },
+      "ResourceCreate": {
+        "properties": {
+          "metadata_json": {
+            "additionalProperties": true,
+            "title": "Metadata Json",
+            "type": "object"
+          },
+          "owner": {
+            "default": "marco",
+            "title": "Owner",
+            "type": "string"
+          },
+          "resource_type": {
+            "title": "Resource Type",
+            "type": "string"
+          },
+          "service_slug": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Service Slug"
+          },
+          "slug": {
+            "pattern": "^[a-z0-9][a-z0-9-]{1,78}[a-z0-9]$",
+            "title": "Slug",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "slug",
+          "title",
+          "resource_type"
+        ],
+        "title": "ResourceCreate",
+        "type": "object"
+      },
+      "RouteCreate": {
+        "properties": {
+          "auth_policy": {
+            "default": "public",
+            "title": "Auth Policy",
+            "type": "string"
+          },
+          "caddy_protection_enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Caddy Protection Enabled"
+          },
+          "host": {
+            "title": "Host",
+            "type": "string"
+          },
+          "parent_slug": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Slug"
+          },
+          "parent_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Type"
+          },
+          "path": {
+            "default": "/",
+            "title": "Path",
+            "type": "string"
+          },
+          "service_slug": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Service Slug"
+          },
+          "status": {
+            "default": "active",
+            "title": "Status",
+            "type": "string"
+          },
+          "tls": {
+            "default": true,
+            "title": "Tls",
+            "type": "boolean"
+          },
+          "upstream": {
+            "title": "Upstream",
+            "type": "string"
+          }
+        },
+        "required": [
+          "host",
+          "upstream"
+        ],
+        "title": "RouteCreate",
+        "type": "object"
+      },
+      "RouteOptionsInput": {
+        "additionalProperties": false,
+        "properties": {
+          "host_aliases": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 30,
+            "title": "Host Aliases",
+            "type": "array"
+          },
+          "owner_kind": {
+            "default": "generated",
+            "enum": [
+              "generated",
+              "manual_override"
+            ],
+            "title": "Owner Kind",
+            "type": "string"
+          },
+          "owner_ref": {
+            "default": "",
+            "title": "Owner Ref",
+            "type": "string"
+          },
+          "response_headers": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Response Headers",
+            "type": "object"
+          },
+          "tls_profile": {
+            "default": "default",
+            "enum": [
+              "default",
+              "cloudflare_dns01"
+            ],
+            "title": "Tls Profile",
+            "type": "string"
+          },
+          "upstream_headers": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Upstream Headers",
+            "type": "object"
+          }
+        },
+        "title": "RouteOptionsInput",
+        "type": "object"
+      },
+      "RouteUpdate": {
+        "additionalProperties": false,
+        "description": "Change a route without replacing its identity or protection policy.",
+        "properties": {
+          "service_slug": {
+            "anyOf": [
+              {
+                "pattern": "^[a-z0-9][a-z0-9-]{1,78}[a-z0-9]$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Service Slug"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "upstream": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Upstream"
+          }
+        },
+        "title": "RouteUpdate",
+        "type": "object"
+      },
+      "RuleInput": {
+        "additionalProperties": false,
+        "properties": {
+          "actions": {
+            "items": {
+              "enum": [
+                "start",
+                "stop",
+                "restart",
+                "autostart",
+                "pull",
+                "build",
+                "deploy",
+                "update",
+                "rollback"
+              ],
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Actions",
+            "type": "array"
+          },
+          "message": {
+            "maxLength": 1000,
+            "minLength": 3,
+            "title": "Message",
+            "type": "string"
+          },
+          "rule_id": {
+            "pattern": "^[a-z][a-z0-9-]{1,79}$",
+            "title": "Rule Id",
+            "type": "string"
+          },
+          "service_slug": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Service Slug"
+          },
+          "severity": {
+            "enum": [
+              "block",
+              "requires_approval",
+              "warning",
+              "info"
+            ],
+            "title": "Severity",
+            "type": "string"
+          },
+          "version": {
+            "minimum": 1.0,
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "rule_id",
+          "version",
+          "severity",
+          "actions",
+          "message"
+        ],
+        "title": "RuleInput",
+        "type": "object"
+      },
+      "RuntimeCreate": {
+        "properties": {
+          "compose_project": {
+            "default": "",
+            "title": "Compose Project",
+            "type": "string"
+          },
+          "metadata_json": {
+            "additionalProperties": true,
+            "title": "Metadata Json",
+            "type": "object"
+          },
+          "path": {
+            "default": "",
+            "title": "Path",
+            "type": "string"
+          },
+          "restart_policy": {
+            "default": "",
+            "title": "Restart Policy",
+            "type": "string"
+          },
+          "runtime_type": {
+            "title": "Runtime Type",
+            "type": "string"
+          },
+          "service_slug": {
+            "title": "Service Slug",
+            "type": "string"
+          },
+          "systemd_unit": {
+            "default": "",
+            "title": "Systemd Unit",
+            "type": "string"
+          }
+        },
+        "required": [
+          "service_slug",
+          "runtime_type"
+        ],
+        "title": "RuntimeCreate",
+        "type": "object"
+      },
+      "RuntimeObservation": {
+        "additionalProperties": true,
+        "properties": {
+          "autostart_policy": {
+            "enum": [
+              "on_demand",
+              "always",
+              "disabled"
+            ],
+            "title": "Autostart Policy",
+            "type": "string"
+          },
+          "containers": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Containers",
+            "type": "array"
+          },
+          "desired_state": {
+            "enum": [
+              "manual",
+              "running",
+              "stopped"
+            ],
+            "title": "Desired State",
+            "type": "string"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "metrics": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Metrics",
+            "type": "array"
+          },
+          "observed_at": {
+            "format": "date-time",
+            "title": "Observed At",
+            "type": "string"
+          },
+          "observed_state": {
+            "enum": [
+              "unknown",
+              "unavailable",
+              "running",
+              "stopped",
+              "unhealthy",
+              "partial"
+            ],
+            "title": "Observed State",
+            "type": "string"
+          },
+          "runtime_id": {
+            "title": "Runtime Id",
+            "type": "string"
+          },
+          "runtime_type": {
+            "title": "Runtime Type",
+            "type": "string"
+          },
+          "source": {
+            "const": "docker",
+            "title": "Source",
+            "type": "string"
+          }
+        },
+        "required": [
+          "runtime_id",
+          "runtime_type",
+          "desired_state",
+          "autostart_policy",
+          "observed_at",
+          "source",
+          "observed_state",
+          "containers",
+          "metrics"
+        ],
+        "title": "RuntimeObservation",
+        "type": "object"
+      },
+      "SecretRefCreate": {
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "provider": {
+            "default": "bitwarden",
+            "title": "Provider",
+            "type": "string"
+          },
+          "ref": {
+            "title": "Ref",
+            "type": "string"
+          },
+          "service_slug": {
+            "title": "Service Slug",
+            "type": "string"
+          },
+          "target_env": {
+            "default": "",
+            "title": "Target Env",
+            "type": "string"
+          }
+        },
+        "required": [
+          "service_slug",
+          "name",
+          "ref"
+        ],
+        "title": "SecretRefCreate",
+        "type": "object"
+      },
+      "ServiceCreate": {
+        "properties": {
+          "caddy_protection_enabled": {
+            "default": false,
+            "title": "Caddy Protection Enabled",
+            "type": "boolean"
+          },
+          "component_type": {
+            "default": "service",
+            "title": "Component Type",
+            "type": "string"
+          },
+          "criticality": {
+            "default": 3,
+            "maximum": 5.0,
+            "minimum": 1.0,
+            "title": "Criticality",
+            "type": "integer"
+          },
+          "large_port_space": {
+            "default": false,
+            "title": "Large Port Space",
+            "type": "boolean"
+          },
+          "lifecycle": {
+            "default": "development",
+            "title": "Lifecycle",
+            "type": "string"
+          },
+          "metadata_json": {
+            "additionalProperties": true,
+            "title": "Metadata Json",
+            "type": "object"
+          },
+          "owner": {
+            "default": "marco",
+            "title": "Owner",
+            "type": "string"
+          },
+          "port_base": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Port Base"
+          },
+          "slug": {
+            "pattern": "^[a-z0-9][a-z0-9-]{1,78}[a-z0-9]$",
+            "title": "Slug",
+            "type": "string"
+          },
+          "summary": {
+            "default": "",
+            "title": "Summary",
+            "type": "string"
+          },
+          "system": {
+            "default": "services",
+            "title": "System",
+            "type": "string"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Tags",
+            "type": "array"
+          },
+          "title": {
+            "maxLength": 160,
+            "minLength": 2,
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "slug",
+          "title"
+        ],
+        "title": "ServiceCreate",
+        "type": "object"
+      },
+      "ServiceUpdate": {
+        "properties": {
+          "caddy_protection_enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Caddy Protection Enabled"
+          },
+          "component_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Component Type"
+          },
+          "criticality": {
+            "anyOf": [
+              {
+                "maximum": 5.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Criticality"
+          },
+          "large_port_space": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Large Port Space"
+          },
+          "lifecycle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lifecycle"
+          },
+          "metadata_json": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metadata Json"
+          },
+          "owner": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Owner"
+          },
+          "port_base": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Port Base"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary"
+          },
+          "system": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "System"
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tags"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          }
+        },
+        "title": "ServiceUpdate",
+        "type": "object"
+      },
+      "SkillCreate": {
+        "properties": {
+          "description": {
+            "default": "",
+            "title": "Description",
+            "type": "string"
+          },
+          "path": {
+            "title": "Path",
+            "type": "string"
+          },
+          "service_slug": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Service Slug"
+          },
+          "skill_type": {
+            "default": "component",
+            "title": "Skill Type",
+            "type": "string"
+          },
+          "slug": {
+            "pattern": "^[a-z0-9][a-z0-9-]{1,78}[a-z0-9]$",
+            "title": "Slug",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "slug",
+          "title",
+          "path"
+        ],
+        "title": "SkillCreate",
+        "type": "object"
+      },
+      "SourceInput": {
+        "additionalProperties": false,
+        "properties": {
+          "compose_service": {
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,119}$",
+            "title": "Compose Service",
+            "type": "string"
+          },
+          "image_ref": {
+            "maxLength": 255,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:-]*$",
+            "title": "Image Ref",
+            "type": "string"
+          },
+          "runtime_id": {
+            "title": "Runtime Id",
+            "type": "string"
+          },
+          "source_kind": {
+            "enum": [
+              "registry_image",
+              "compose_build",
+              "external_build"
+            ],
+            "title": "Source Kind",
+            "type": "string"
+          },
+          "workflow_id": {
+            "default": "",
+            "maxLength": 80,
+            "pattern": "^[a-zA-Z0-9_.-]*$",
+            "title": "Workflow Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "runtime_id",
+          "compose_service",
+          "source_kind",
+          "image_ref"
+        ],
+        "title": "SourceInput",
+        "type": "object"
+      },
+      "SubServiceCreate": {
+        "properties": {
+          "caddy_protection_enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Caddy Protection Enabled"
+          },
+          "metadata_json": {
+            "additionalProperties": true,
+            "title": "Metadata Json",
+            "type": "object"
+          },
+          "parent_id": {
+            "title": "Parent Id",
+            "type": "string"
+          },
+          "parent_type": {
+            "title": "Parent Type",
+            "type": "string"
+          },
+          "slug": {
+            "pattern": "^[a-z0-9][a-z0-9-]{1,78}[a-z0-9]$",
+            "title": "Slug",
+            "type": "string"
+          },
+          "title": {
+            "maxLength": 160,
+            "minLength": 2,
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "slug",
+          "title",
+          "parent_type",
+          "parent_id"
+        ],
+        "title": "SubServiceCreate",
+        "type": "object"
+      },
+      "SubServiceUpdate": {
+        "properties": {
+          "caddy_protection_enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Caddy Protection Enabled"
+          },
+          "metadata_json": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metadata Json"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          }
+        },
+        "title": "SubServiceUpdate",
+        "type": "object"
+      },
+      "TechnicalContract": {
+        "properties": {
+          "aliases": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Aliases",
+            "type": "array"
+          },
+          "apis": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Apis",
+            "type": "array"
+          },
+          "deployment_sources": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Deployment Sources",
+            "type": "array"
+          },
+          "docs": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Docs",
+            "type": "array"
+          },
+          "healthchecks": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Healthchecks",
+            "type": "array"
+          },
+          "lifecycle": {
+            "additionalProperties": true,
+            "title": "Lifecycle",
+            "type": "object"
+          },
+          "policies": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Policies",
+            "type": "array"
+          },
+          "ports": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Ports",
+            "type": "array"
+          },
+          "profile": {
+            "additionalProperties": true,
+            "title": "Profile",
+            "type": "object"
+          },
+          "relations": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Relations",
+            "type": "array"
+          },
+          "resources": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Resources",
+            "type": "array"
+          },
+          "revision": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Revision",
+            "type": "string"
+          },
+          "route_options": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Route Options",
+            "type": "array"
+          },
+          "routes": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Routes",
+            "type": "array"
+          },
+          "runtimes": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Runtimes",
+            "type": "array"
+          },
+          "schema_version": {
+            "const": "1.0",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "secret_refs": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Secret Refs",
+            "type": "array"
+          },
+          "service": {
+            "additionalProperties": true,
+            "title": "Service",
+            "type": "object"
+          },
+          "skills": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Skills",
+            "type": "array"
+          },
+          "subservices": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Subservices",
+            "type": "array"
+          }
+        },
+        "required": [
+          "schema_version",
+          "revision",
+          "service",
+          "profile",
+          "aliases",
+          "routes",
+          "ports",
+          "runtimes",
+          "resources",
+          "apis",
+          "docs",
+          "skills",
+          "secret_refs",
+          "healthchecks",
+          "subservices",
+          "relations",
+          "route_options",
+          "deployment_sources",
+          "lifecycle",
+          "policies"
+        ],
+        "title": "TechnicalContract",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      },
+      "ValidationResultOut": {
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "entity_id": {
+            "default": "",
+            "title": "Entity Id",
+            "type": "string"
+          },
+          "entity_kind": {
+            "default": "",
+            "title": "Entity Kind",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "severity": {
+            "title": "Severity",
+            "type": "string"
+          }
+        },
+        "required": [
+          "severity",
+          "code",
+          "message"
+        ],
+        "title": "ValidationResultOut",
+        "type": "object"
+      },
+      "ValidationRunOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationResultOut"
+            },
+            "title": "Results",
+            "type": "array"
+          },
+          "scope": {
+            "title": "Scope",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "scope",
+          "status",
+          "results"
+        ],
+        "title": "ValidationRunOut",
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "PortalSession": {
+        "in": "cookie",
+        "name": "caddy_schutz_session",
+        "type": "apiKey"
+      },
+      "ScopedBearer": {
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "title": "Control Plane API",
+    "version": "0.2.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v1/activity": {
+      "get": {
+        "operationId": "activity_api_v1_activity_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Activity"
+      }
+    },
+    "/api/v1/agent-context/{slug}": {
+      "get": {
+        "operationId": "agent_context_api_v1_agent_context__slug__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "title": "Slug",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Agent Context"
+      }
+    },
+    "/api/v1/apis": {
+      "post": {
+        "operationId": "add_api_api_v1_apis_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApiEntityCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Add Api"
+      }
+    },
+    "/api/v1/caddy-schutz/routes/{route_id}": {
+      "patch": {
+        "operationId": "set_route_caddy_schutz_api_v1_caddy_schutz_routes__route_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "route_id",
+            "required": true,
+            "schema": {
+              "title": "Route Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CaddyProtectionUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Set Route Caddy Schutz"
+      }
+    },
+    "/api/v1/caddy-schutz/services/{slug}": {
+      "patch": {
+        "operationId": "set_service_caddy_schutz_api_v1_caddy_schutz_services__slug__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "title": "Slug",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CaddyProtectionUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Set Service Caddy Schutz"
+      }
+    },
+    "/api/v1/caddy-schutz/status": {
+      "get": {
+        "operationId": "caddy_schutz_status_api_v1_caddy_schutz_status_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Caddy Schutz Status"
+      }
+    },
+    "/api/v1/caddy-schutz/subservices/{slug}": {
+      "patch": {
+        "operationId": "set_subservice_caddy_schutz_api_v1_caddy_schutz_subservices__slug__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "title": "Slug",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CaddyProtectionUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Set Subservice Caddy Schutz"
+      }
+    },
+    "/api/v1/caddy/cert-zones/apply": {
+      "post": {
+        "operationId": "caddy_cert_zones_apply_api_v1_caddy_cert_zones_apply_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CaddyCertZoneRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Caddy Cert Zones Apply"
+      }
+    },
+    "/api/v1/caddy/cert-zones/plan": {
+      "post": {
+        "operationId": "caddy_cert_zones_plan_api_v1_caddy_cert_zones_plan_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CaddyCertZoneRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Caddy Cert Zones Plan"
+      }
+    },
+    "/api/v1/caddy/cert-zones/status": {
+      "get": {
+        "operationId": "cert_status_api_v1_caddy_cert_zones_status_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Missing credentials"
+          },
+          "403": {
+            "description": "Scope, protection or approval denied"
+          },
+          "404": {
+            "description": "Unknown resource"
+          },
+          "409": {
+            "description": "State or ownership conflict"
+          },
+          "412": {
+            "description": "Stale revision or plan"
+          },
+          "422": {
+            "description": "Invalid schema or policy"
+          },
+          "503": {
+            "description": "Backend unavailable"
+          }
+        },
+        "security": [
+          {
+            "ScopedBearer": []
+          },
+          {
+            "PortalSession": []
+          }
+        ],
+        "summary": "Cert Status"
+      }
+    },
+    "/api/v1/caddy/ownership": {
+      "get": {
+        "operationId": "route_ownership_api_v1_caddy_ownership_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Missing credentials"
+          },
+          "403": {
+            "description": "Scope, protection or approval denied"
+          },
+          "404": {
+            "description": "Unknown resource"
+          },
+          "409": {
+            "description": "State or ownership conflict"
+          },
+          "412": {
+            "description": "Stale revision or plan"
+          },
+          "422": {
+            "description": "Invalid schema or policy"
+          },
+          "503": {
+            "description": "Backend unavailable"
+          }
+        },
+        "security": [
+          {
+            "ScopedBearer": []
+          },
+          {
+            "PortalSession": []
+          }
+        ],
+        "summary": "Route Ownership"
+      }
+    },
+    "/api/v1/catalog": {
+      "get": {
+        "operationId": "catalog_api_v1_catalog_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 100,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Missing credentials"
+          },
+          "403": {
+            "description": "Scope, protection or approval denied"
+          },
+          "404": {
+            "description": "Unknown resource"
+          },
+          "409": {
+            "description": "State or ownership conflict"
+          },
+          "412": {
+            "description": "Stale revision or plan"
+          },
+          "422": {
+            "description": "Invalid schema or policy"
+          },
+          "503": {
+            "description": "Backend unavailable"
+          }
+        },
+        "security": [
+          {
+            "ScopedBearer": []
+          },
+          {
+            "PortalSession": []
+          }
+        ],
+        "summary": "Catalog"
+      }
+    },
+    "/api/v1/comments": {
+      "post": {
+        "operationId": "add_comment_api_v1_comments_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommentCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Add Comment"
+      }
+    },
+    "/api/v1/db/init": {
+      "post": {
+        "operationId": "db_init_api_v1_db_init_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Db Init"
+      }
+    },
+    "/api/v1/deploy/caddy/apply": {
+      "post": {
+        "operationId": "caddy_apply_api_v1_deploy_caddy_apply_post",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "plan_hash",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Plan Hash"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Caddy Apply"
+      }
+    },
+    "/api/v1/deploy/caddy/plan": {
+      "post": {
+        "operationId": "caddy_plan_api_v1_deploy_caddy_plan_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Caddy Plan"
+      }
+    },
+    "/api/v1/docker/storage": {
+      "get": {
+        "operationId": "storage_api_v1_docker_storage_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Missing credentials"
+          },
+          "403": {
+            "description": "Scope, protection or approval denied"
+          },
+          "404": {
+            "description": "Unknown resource"
+          },
+          "409": {
+            "description": "State or ownership conflict"
+          },
+          "412": {
+            "description": "Stale revision or plan"
+          },
+          "422": {
+            "description": "Invalid schema or policy"
+          },
+          "503": {
+            "description": "Backend unavailable"
+          }
+        },
+        "security": [
+          {
+            "ScopedBearer": []
+          },
+          {
+            "PortalSession": []
+          }
+        ],
+        "summary": "Storage"
+      }
+    },
+    "/api/v1/docker/storage/cleanup/plan": {
+      "post": {
+        "operationId": "storage_api_v1_docker_storage_cleanup_plan_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Missing credentials"
+          },
+          "403": {
+            "description": "Scope, protection or approval denied"
+          },
+          "404": {
+            "description": "Unknown resource"
+          },
+          "409": {
+            "description": "State or ownership conflict"
+          },
+          "412": {
+            "description": "Stale revision or plan"
+          },
+          "422": {
+            "description": "Invalid schema or policy"
+          },
+          "503": {
+            "description": "Backend unavailable"
+          }
+        },
+        "security": [
+          {
+            "ScopedBearer": []
+          },
+          {
+            "PortalSession": []
+          }
+        ],
+        "summary": "Storage"
+      }
+    },
+    "/api/v1/docs": {
+      "post": {
+        "operationId": "add_doc_api_v1_docs_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DocCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Add Doc"
+      }
+    },
+    "/api/v1/export/json": {
+      "post": {
+        "operationId": "export_json_endpoint_api_v1_export_json_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Export Json Endpoint"
+      }
+    },
+    "/api/v1/generate/all": {
+      "post": {
+        "operationId": "generate_all_endpoint_api_v1_generate_all_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Generate All Endpoint"
+      }
+    },
+    "/api/v1/generate/caddy": {
+      "post": {
+        "operationId": "generate_caddy_endpoint_api_v1_generate_caddy_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Generate Caddy Endpoint"
+      }
+    },
+    "/api/v1/healthchecks": {
+      "post": {
+        "operationId": "add_healthcheck_api_v1_healthchecks_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HealthcheckCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Add Healthcheck"
+      }
+    },
+    "/api/v1/healthchecks/run": {
+      "post": {
+        "operationId": "run_healthchecks_api_v1_healthchecks_run_post",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "service_slug",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Service Slug"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Run Healthchecks"
+      }
+    },
+    "/api/v1/lifecycle/archives/inspect": {
+      "post": {
+        "operationId": "lifecycle_archive_inspect_api_v1_lifecycle_archives_inspect_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LifecycleArchiveInspectRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Lifecycle Archive Inspect"
+      }
+    },
+    "/api/v1/lifecycle/archives/{archive_id}/execute-restore": {
+      "post": {
+        "operationId": "lifecycle_execute_restore_api_v1_lifecycle_archives__archive_id__execute_restore_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "archive_id",
+            "required": true,
+            "schema": {
+              "title": "Archive Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LifecycleExecuteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Lifecycle Execute Restore"
+      }
+    },
+    "/api/v1/lifecycle/archives/{archive_id}/plan-restore": {
+      "post": {
+        "operationId": "lifecycle_plan_restore_api_v1_lifecycle_archives__archive_id__plan_restore_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "archive_id",
+            "required": true,
+            "schema": {
+              "title": "Archive Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Lifecycle Plan Restore"
+      }
+    },
+    "/api/v1/lifecycle/services": {
+      "get": {
+        "operationId": "lifecycle_services_api_v1_lifecycle_services_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Lifecycle Services"
+      }
+    },
+    "/api/v1/lifecycle/services/{slug}": {
+      "get": {
+        "operationId": "lifecycle_service_api_v1_lifecycle_services__slug__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "title": "Slug",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Lifecycle Service"
+      }
+    },
+    "/api/v1/lifecycle/services/{slug}/execute-archive": {
+      "post": {
+        "operationId": "lifecycle_execute_archive_api_v1_lifecycle_services__slug__execute_archive_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "title": "Slug",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LifecycleExecuteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Lifecycle Execute Archive"
+      }
+    },
+    "/api/v1/lifecycle/services/{slug}/execute-snapshot": {
+      "post": {
+        "operationId": "lifecycle_execute_snapshot_api_v1_lifecycle_services__slug__execute_snapshot_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "title": "Slug",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LifecycleExecuteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Lifecycle Execute Snapshot"
+      }
+    },
+    "/api/v1/lifecycle/services/{slug}/plan-archive": {
+      "post": {
+        "operationId": "lifecycle_plan_archive_api_v1_lifecycle_services__slug__plan_archive_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "title": "Slug",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Lifecycle Plan Archive"
+      }
+    },
+    "/api/v1/lifecycle/services/{slug}/plan-snapshot": {
+      "post": {
+        "operationId": "lifecycle_plan_snapshot_api_v1_lifecycle_services__slug__plan_snapshot_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "title": "Slug",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Lifecycle Plan Snapshot"
+      }
+    },
+    "/api/v1/managed-services/provision": {
+      "post": {
+        "operationId": "provision_managed_service_api_v1_managed_services_provision_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ManagedServiceProvisionCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Provision Managed Service"
+      }
+    },
+    "/api/v1/management/activities": {
+      "get": {
+        "operationId": "activities_api_v1_management_activities_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Missing credentials"
+          },
+          "403": {
+            "description": "Scope, protection or approval denied"
+          },
+          "404": {
+            "description": "Unknown resource"
+          },
+          "409": {
+            "description": "State or ownership conflict"
+          },
+          "412": {
+            "description": "Stale revision or plan"
+          },
+          "422": {
+            "description": "Invalid schema or policy"
+          },
+          "503": {
+            "description": "Backend unavailable"
+          }
+        },
+        "security": [
+          {
+            "ScopedBearer": []
+          },
+          {
+            "PortalSession": []
+          }
+        ],
+        "summary": "Activities"
+      }
+    },
+    "/api/v1/management/context": {
+      "get": {
+        "operationId": "management_context_api_v1_management_context_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Missing credentials"
+          },
+          "403": {
+            "description": "Scope, protection or approval denied"
+          },
+          "404": {
+            "description": "Unknown resource"
+          },
+          "409": {
+            "description": "State or ownership conflict"
+          },
+          "412": {
+            "description": "Stale revision or plan"
+          },
+          "422": {
+            "description": "Invalid schema or policy"
+          },
+          "503": {
+            "description": "Backend unavailable"
+          }
+        },
+        "security": [
+          {
+            "ScopedBearer": []
+          },
+          {
+            "PortalSession": []
+          }
+        ],
+        "summary": "Management Context"
+      }
+    },
+    "/api/v1/management/system": {
+      "get": {
+        "operationId": "system_status_api_v1_management_system_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Missing credentials"
+          },
+          "403": {
+            "description": "Scope, protection or approval denied"
+          },
+          "404": {
+            "description": "Unknown resource"
+          },
+          "409": {
+            "description": "State or ownership conflict"
+          },
+          "412": {
+            "description": "Stale revision or plan"
+          },
+          "422": {
+            "description": "Invalid schema or policy"
+          },
+          "503": {
+            "description": "Backend unavailable"
+          }
+        },
+        "security": [
+          {
+            "ScopedBearer": []
+          },
+          {
+            "PortalSession": []
+          }
+        ],
+        "summary": "System Status"
+      }
+    },
+    "/api/v1/meta": {
+      "get": {
+        "operationId": "meta_api_v1_meta_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Meta"
+      }
+    },
+    "/api/v1/operations": {
+      "get": {
+        "operationId": "operations_api_v1_operations_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_list_OperationOut__"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Missing credentials"
+          },
+          "403": {
+            "description": "Scope, protection or approval denied"
+          },
+          "404": {
+            "description": "Unknown resource"
+          },
+          "409": {
+            "description": "State or ownership conflict"
+          },
+          "412": {
+            "description": "Stale revision or plan"
+          },
+          "422": {
+            "description": "Invalid schema or policy"
+          },
+          "503": {
+            "description": "Backend unavailable"
+          }
+        },
+        "security": [
+          {
+            "ScopedBearer": []
+          },
+          {
+            "PortalSession": []
+          }
+        ],
+        "summary": "Operations"
+      }
+    },
+    "/api/v1/operations/{operation_id}": {
+      "get": {
+        "operationId": "operation_api_v1_operations__operation_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "operation_id",
+            "required": true,
+            "schema": {
+              "title": "Operation Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_OperationOut_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Missing credentials"
+          },
+          "403": {
+            "description": "Scope, protection or approval denied"
+          },
+          "404": {
+            "description": "Unknown resource"
+          },
+          "409": {
+            "description": "State or ownership conflict"
+          },
+          "412": {
+            "description": "Stale revision or plan"
+          },
+          "422": {
+            "description": "Invalid schema or policy"
+          },
+          "503": {
+            "description": "Backend unavailable"
+          }
+        },
+        "security": [
+          {
+            "ScopedBearer": []
+          },
+          {
+            "PortalSession": []
+          }
+        ],
+        "summary": "Operation"
+      }
+    },
+    "/api/v1/operations/{operation_id}/execute": {
+      "post": {
+        "operationId": "operations_execute_api_v1_operations__operation_id__execute_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "operation_id",
+            "required": true,
+            "schema": {
+              "title": "Operation Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExecuteInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_OperationOut_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Missing credentials"
+          },
+          "403": {
+            "description": "Scope, protection or approval denied"
+          },
+          "404": {
+            "description": "Unknown resource"
+          },
+          "409": {
+            "description": "State or ownership conflict"
+          },
+          "412": {
+            "description": "Stale revision or plan"
+          },
+          "422": {
+            "description": "Invalid schema or policy"
+          },
+          "503": {
+            "description": "Backend unavailable"
+          }
+        },
+        "security": [
+          {
+            "ScopedBearer": []
+          },
+          {
+            "PortalSession": []
+          }
+        ],
+        "summary": "Operations Execute"
+      }
+    },
+    "/api/v1/policies": {
+      "post": {
+        "operationId": "add_policy_api_v1_policies_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RuleInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Missing credentials"
+          },
+          "403": {
+            "description": "Scope, protection or approval denied"
+          },
+          "404": {
+            "description": "Unknown resource"
+          },
+          "409": {
+            "description": "State or ownership conflict"
+          },
+          "412": {
+            "description": "Stale revision or plan"
+          },
+          "422": {
+            "description": "Invalid schema or policy"
+          },
+          "503": {
+            "description": "Backend unavailable"
+          }
+        },
+        "security": [
+          {
+            "ScopedBearer": []
+          },
+          {
+            "PortalSession": []
+          }
+        ],
+        "summary": "Add Policy"
+      }
+    },
+    "/api/v1/ports": {
+      "post": {
+        "operationId": "add_port_api_v1_ports_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PortCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Add Port"
+      }
+    },
+    "/api/v1/ports/{port_id}": {
+      "patch": {
+        "operationId": "update_port_api_v1_ports__port_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "port_id",
+            "required": true,
+            "schema": {
+              "title": "Port Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PortUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update Port"
+      }
+    },
+    "/api/v1/registry/reconcile": {
+      "get": {
+        "operationId": "registry_reconcile_api_v1_registry_reconcile_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Missing credentials"
+          },
+          "403": {
+            "description": "Scope, protection or approval denied"
+          },
+          "404": {
+            "description": "Unknown resource"
+          },
+          "409": {
+            "description": "State or ownership conflict"
+          },
+          "412": {
+            "description": "Stale revision or plan"
+          },
+          "422": {
+            "description": "Invalid schema or policy"
+          },
+          "503": {
+            "description": "Backend unavailable"
+          }
+        },
+        "security": [
+          {
+            "ScopedBearer": []
+          },
+          {
+            "PortalSession": []
+          }
+        ],
+        "summary": "Registry Reconcile"
+      }
+    },
+    "/api/v1/resources": {
+      "post": {
+        "operationId": "add_resource_api_v1_resources_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResourceCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Add Resource"
+      }
+    },
+    "/api/v1/routes": {
+      "get": {
+        "operationId": "list_routes_api_v1_routes_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Routes"
+      },
+      "post": {
+        "operationId": "add_route_api_v1_routes_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RouteCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Add Route"
+      }
+    },
+    "/api/v1/routes/{route_id}": {
+      "patch": {
+        "operationId": "update_route_api_v1_routes__route_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "route_id",
+            "required": true,
+            "schema": {
+              "title": "Route Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RouteUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update Route"
+      }
+    },
+    "/api/v1/routes/{route_id}/options": {
+      "put": {
+        "operationId": "route_options_api_v1_routes__route_id__options_put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "route_id",
+            "required": true,
+            "schema": {
+              "title": "Route Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RouteOptionsInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Missing credentials"
+          },
+          "403": {
+            "description": "Scope, protection or approval denied"
+          },
+          "404": {
+            "description": "Unknown resource"
+          },
+          "409": {
+            "description": "State or ownership conflict"
+          },
+          "412": {
+            "description": "Stale revision or plan"
+          },
+          "422": {
+            "description": "Invalid schema or policy"
+          },
+          "503": {
+            "description": "Backend unavailable"
+          }
+        },
+        "security": [
+          {
+            "ScopedBearer": []
+          },
+          {
+            "PortalSession": []
+          }
+        ],
+        "summary": "Route Options"
+      }
+    },
+    "/api/v1/runtimes": {
+      "post": {
+        "operationId": "add_runtime_api_v1_runtimes_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RuntimeCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Add Runtime"
+      }
+    },
+    "/api/v1/secret-refs": {
+      "post": {
+        "operationId": "add_secret_ref_api_v1_secret_refs_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SecretRefCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Add Secret Ref"
+      }
+    },
+    "/api/v1/services": {
+      "get": {
+        "operationId": "list_services_api_v1_services_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Services"
+      },
+      "post": {
+        "operationId": "create_service_api_v1_services_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServiceCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Service"
+      }
+    },
+    "/api/v1/services/{slug}": {
+      "delete": {
+        "operationId": "delete_service_api_v1_services__slug__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "title": "Slug",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Service"
+      },
+      "get": {
+        "operationId": "show_service_api_v1_services__slug__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "title": "Slug",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Show Service"
+      },
+      "patch": {
+        "operationId": "update_service_api_v1_services__slug__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "title": "Slug",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServiceUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update Service"
+      }
+    },
+    "/api/v1/services/{slug}/aliases": {
+      "post": {
+        "operationId": "alias_add_api_v1_services__slug__aliases_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "title": "Slug",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AliasInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Missing credentials"
+          },
+          "403": {
+            "description": "Scope, protection or approval denied"
+          },
+          "404": {
+            "description": "Unknown resource"
+          },
+          "409": {
+            "description": "State or ownership conflict"
+          },
+          "412": {
+            "description": "Stale revision or plan"
+          },
+          "422": {
+            "description": "Invalid schema or policy"
+          },
+          "503": {
+            "description": "Backend unavailable"
+          }
+        },
+        "security": [
+          {
+            "ScopedBearer": []
+          },
+          {
+            "PortalSession": []
+          }
+        ],
+        "summary": "Alias Add"
+      }
+    },
+    "/api/v1/services/{slug}/archive": {
+      "post": {
+        "operationId": "archive_service_api_v1_services__slug__archive_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "title": "Slug",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Archive Service"
+      }
+    },
+    "/api/v1/services/{slug}/contract": {
+      "get": {
+        "operationId": "contract_api_v1_services__slug__contract_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "title": "Slug",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "format",
+            "required": false,
+            "schema": {
+              "default": "json",
+              "enum": [
+                "json",
+                "yaml"
+              ],
+              "title": "Format",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_TechnicalContract_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Missing credentials"
+          },
+          "403": {
+            "description": "Scope, protection or approval denied"
+          },
+          "404": {
+            "description": "Unknown resource"
+          },
+          "409": {
+            "description": "State or ownership conflict"
+          },
+          "412": {
+            "description": "Stale revision or plan"
+          },
+          "422": {
+            "description": "Invalid schema or policy"
+          },
+          "503": {
+            "description": "Backend unavailable"
+          }
+        },
+        "security": [
+          {
+            "ScopedBearer": []
+          },
+          {
+            "PortalSession": []
+          }
+        ],
+        "summary": "Contract"
+      }
+    },
+    "/api/v1/services/{slug}/dependencies": {
+      "post": {
+        "operationId": "add_dependency_api_v1_services__slug__dependencies_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "title": "Slug",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DependencyInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Missing credentials"
+          },
+          "403": {
+            "description": "Scope, protection or approval denied"
+          },
+          "404": {
+            "description": "Unknown resource"
+          },
+          "409": {
+            "description": "State or ownership conflict"
+          },
+          "412": {
+            "description": "Stale revision or plan"
+          },
+          "422": {
+            "description": "Invalid schema or policy"
+          },
+          "503": {
+            "description": "Backend unavailable"
+          }
+        },
+        "security": [
+          {
+            "ScopedBearer": []
+          },
+          {
+            "PortalSession": []
+          }
+        ],
+        "summary": "Add Dependency"
+      }
+    },
+    "/api/v1/services/{slug}/deployments/images": {
+      "get": {
+        "operationId": "inspect_images_api_v1_services__slug__deployments_images_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "title": "Slug",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Missing credentials"
+          },
+          "403": {
+            "description": "Scope, protection or approval denied"
+          },
+          "404": {
+            "description": "Unknown resource"
+          },
+          "409": {
+            "description": "State or ownership conflict"
+          },
+          "412": {
+            "description": "Stale revision or plan"
+          },
+          "422": {
+            "description": "Invalid schema or policy"
+          },
+          "503": {
+            "description": "Backend unavailable"
+          }
+        },
+        "security": [
+          {
+            "ScopedBearer": []
+          },
+          {
+            "PortalSession": []
+          }
+        ],
+        "summary": "Inspect Images"
+      }
+    },
+    "/api/v1/services/{slug}/deployments/releases": {
+      "get": {
+        "operationId": "releases_api_v1_services__slug__deployments_releases_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "title": "Slug",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Missing credentials"
+          },
+          "403": {
+            "description": "Scope, protection or approval denied"
+          },
+          "404": {
+            "description": "Unknown resource"
+          },
+          "409": {
+            "description": "State or ownership conflict"
+          },
+          "412": {
+            "description": "Stale revision or plan"
+          },
+          "422": {
+            "description": "Invalid schema or policy"
+          },
+          "503": {
+            "description": "Backend unavailable"
+          }
+        },
+        "security": [
+          {
+            "ScopedBearer": []
+          },
+          {
+            "PortalSession": []
+          }
+        ],
+        "summary": "Releases"
+      }
+    },
+    "/api/v1/services/{slug}/deployments/sources": {
+      "get": {
+        "operationId": "sources_api_v1_services__slug__deployments_sources_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "title": "Slug",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Missing credentials"
+          },
+          "403": {
+            "description": "Scope, protection or approval denied"
+          },
+          "404": {
+            "description": "Unknown resource"
+          },
+          "409": {
+            "description": "State or ownership conflict"
+          },
+          "412": {
+            "description": "Stale revision or plan"
+          },
+          "422": {
+            "description": "Invalid schema or policy"
+          },
+          "503": {
+            "description": "Backend unavailable"
+          }
+        },
+        "security": [
+          {
+            "ScopedBearer": []
+          },
+          {
+            "PortalSession": []
+          }
+        ],
+        "summary": "Sources"
+      },
+      "put": {
+        "operationId": "source_put_api_v1_services__slug__deployments_sources_put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "title": "Slug",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SourceInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Missing credentials"
+          },
+          "403": {
+            "description": "Scope, protection or approval denied"
+          },
+          "404": {
+            "description": "Unknown resource"
+          },
+          "409": {
+            "description": "State or ownership conflict"
+          },
+          "412": {
+            "description": "Stale revision or plan"
+          },
+          "422": {
+            "description": "Invalid schema or policy"
+          },
+          "503": {
+            "description": "Backend unavailable"
+          }
+        },
+        "security": [
+          {
+            "ScopedBearer": []
+          },
+          {
+            "PortalSession": []
+          }
+        ],
+        "summary": "Source Put"
+      }
+    },
+    "/api/v1/services/{slug}/metadata/export": {
+      "get": {
+        "operationId": "metadata_export_api_v1_services__slug__metadata_export_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "title": "Slug",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "format",
+            "required": false,
+            "schema": {
+              "default": "json",
+              "enum": [
+                "json",
+                "yaml"
+              ],
+              "title": "Format",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Missing credentials"
+          },
+          "403": {
+            "description": "Scope, protection or approval denied"
+          },
+          "404": {
+            "description": "Unknown resource"
+          },
+          "409": {
+            "description": "State or ownership conflict"
+          },
+          "412": {
+            "description": "Stale revision or plan"
+          },
+          "422": {
+            "description": "Invalid schema or policy"
+          },
+          "503": {
+            "description": "Backend unavailable"
+          }
+        },
+        "security": [
+          {
+            "ScopedBearer": []
+          },
+          {
+            "PortalSession": []
+          }
+        ],
+        "summary": "Metadata Export"
+      }
+    },
+    "/api/v1/services/{slug}/metadata/import": {
+      "post": {
+        "operationId": "metadata_import_api_v1_services__slug__metadata_import_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "title": "Slug",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MetadataInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Missing credentials"
+          },
+          "403": {
+            "description": "Scope, protection or approval denied"
+          },
+          "404": {
+            "description": "Unknown resource"
+          },
+          "409": {
+            "description": "State or ownership conflict"
+          },
+          "412": {
+            "description": "Stale revision or plan"
+          },
+          "422": {
+            "description": "Invalid schema or policy"
+          },
+          "503": {
+            "description": "Backend unavailable"
+          }
+        },
+        "security": [
+          {
+            "ScopedBearer": []
+          },
+          {
+            "PortalSession": []
+          }
+        ],
+        "summary": "Metadata Import"
+      }
+    },
+    "/api/v1/services/{slug}/metadata/plan": {
+      "post": {
+        "operationId": "import_plan_api_v1_services__slug__metadata_plan_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "title": "Slug",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MetadataInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Missing credentials"
+          },
+          "403": {
+            "description": "Scope, protection or approval denied"
+          },
+          "404": {
+            "description": "Unknown resource"
+          },
+          "409": {
+            "description": "State or ownership conflict"
+          },
+          "412": {
+            "description": "Stale revision or plan"
+          },
+          "422": {
+            "description": "Invalid schema or policy"
+          },
+          "503": {
+            "description": "Backend unavailable"
+          }
+        },
+        "security": [
+          {
+            "ScopedBearer": []
+          },
+          {
+            "PortalSession": []
+          }
+        ],
+        "summary": "Import Plan"
+      }
+    },
+    "/api/v1/services/{slug}/operations/plan": {
+      "post": {
+        "operationId": "operations_plan_api_v1_services__slug__operations_plan_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "title": "Slug",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OperationInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_OperationOut_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Missing credentials"
+          },
+          "403": {
+            "description": "Scope, protection or approval denied"
+          },
+          "404": {
+            "description": "Unknown resource"
+          },
+          "409": {
+            "description": "State or ownership conflict"
+          },
+          "412": {
+            "description": "Stale revision or plan"
+          },
+          "422": {
+            "description": "Invalid schema or policy"
+          },
+          "503": {
+            "description": "Backend unavailable"
+          }
+        },
+        "security": [
+          {
+            "ScopedBearer": []
+          },
+          {
+            "PortalSession": []
+          }
+        ],
+        "summary": "Operations Plan"
+      }
+    },
+    "/api/v1/services/{slug}/policies": {
+      "get": {
+        "operationId": "rules_api_v1_services__slug__policies_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "title": "Slug",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Missing credentials"
+          },
+          "403": {
+            "description": "Scope, protection or approval denied"
+          },
+          "404": {
+            "description": "Unknown resource"
+          },
+          "409": {
+            "description": "State or ownership conflict"
+          },
+          "412": {
+            "description": "Stale revision or plan"
+          },
+          "422": {
+            "description": "Invalid schema or policy"
+          },
+          "503": {
+            "description": "Backend unavailable"
+          }
+        },
+        "security": [
+          {
+            "ScopedBearer": []
+          },
+          {
+            "PortalSession": []
+          }
+        ],
+        "summary": "Rules"
+      }
+    },
+    "/api/v1/services/{slug}/policies/validate": {
+      "post": {
+        "operationId": "policy_check_api_v1_services__slug__policies_validate_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "title": "Slug",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PolicyCheck"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Missing credentials"
+          },
+          "403": {
+            "description": "Scope, protection or approval denied"
+          },
+          "404": {
+            "description": "Unknown resource"
+          },
+          "409": {
+            "description": "State or ownership conflict"
+          },
+          "412": {
+            "description": "Stale revision or plan"
+          },
+          "422": {
+            "description": "Invalid schema or policy"
+          },
+          "503": {
+            "description": "Backend unavailable"
+          }
+        },
+        "security": [
+          {
+            "ScopedBearer": []
+          },
+          {
+            "PortalSession": []
+          }
+        ],
+        "summary": "Policy Check"
+      }
+    },
+    "/api/v1/services/{slug}/profile": {
+      "get": {
+        "operationId": "profile_api_v1_services__slug__profile_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "title": "Slug",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Missing credentials"
+          },
+          "403": {
+            "description": "Scope, protection or approval denied"
+          },
+          "404": {
+            "description": "Unknown resource"
+          },
+          "409": {
+            "description": "State or ownership conflict"
+          },
+          "412": {
+            "description": "Stale revision or plan"
+          },
+          "422": {
+            "description": "Invalid schema or policy"
+          },
+          "503": {
+            "description": "Backend unavailable"
+          }
+        },
+        "security": [
+          {
+            "ScopedBearer": []
+          },
+          {
+            "PortalSession": []
+          }
+        ],
+        "summary": "Profile"
+      },
+      "put": {
+        "operationId": "profile_put_api_v1_services__slug__profile_put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "title": "Slug",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProfileUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Missing credentials"
+          },
+          "403": {
+            "description": "Scope, protection or approval denied"
+          },
+          "404": {
+            "description": "Unknown resource"
+          },
+          "409": {
+            "description": "State or ownership conflict"
+          },
+          "412": {
+            "description": "Stale revision or plan"
+          },
+          "422": {
+            "description": "Invalid schema or policy"
+          },
+          "503": {
+            "description": "Backend unavailable"
+          }
+        },
+        "security": [
+          {
+            "ScopedBearer": []
+          },
+          {
+            "PortalSession": []
+          }
+        ],
+        "summary": "Profile Put"
+      }
+    },
+    "/api/v1/services/{slug}/runtime/logs": {
+      "get": {
+        "operationId": "logs_api_v1_services__slug__runtime_logs_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "title": "Slug",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "runtime_id",
+            "required": true,
+            "schema": {
+              "title": "Runtime Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "tail",
+            "required": false,
+            "schema": {
+              "default": 100,
+              "maximum": 500,
+              "minimum": 1,
+              "title": "Tail",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Missing credentials"
+          },
+          "403": {
+            "description": "Scope, protection or approval denied"
+          },
+          "404": {
+            "description": "Unknown resource"
+          },
+          "409": {
+            "description": "State or ownership conflict"
+          },
+          "412": {
+            "description": "Stale revision or plan"
+          },
+          "422": {
+            "description": "Invalid schema or policy"
+          },
+          "503": {
+            "description": "Backend unavailable"
+          }
+        },
+        "security": [
+          {
+            "ScopedBearer": []
+          },
+          {
+            "PortalSession": []
+          }
+        ],
+        "summary": "Logs"
+      }
+    },
+    "/api/v1/services/{slug}/runtime/status": {
+      "get": {
+        "operationId": "status_api_v1_services__slug__runtime_status_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "title": "Slug",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_list_RuntimeObservation__"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Missing credentials"
+          },
+          "403": {
+            "description": "Scope, protection or approval denied"
+          },
+          "404": {
+            "description": "Unknown resource"
+          },
+          "409": {
+            "description": "State or ownership conflict"
+          },
+          "412": {
+            "description": "Stale revision or plan"
+          },
+          "422": {
+            "description": "Invalid schema or policy"
+          },
+          "503": {
+            "description": "Backend unavailable"
+          }
+        },
+        "security": [
+          {
+            "ScopedBearer": []
+          },
+          {
+            "PortalSession": []
+          }
+        ],
+        "summary": "Status"
+      }
+    },
+    "/api/v1/services/{slug}/tree": {
+      "get": {
+        "operationId": "service_tree_api_v1_services__slug__tree_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "title": "Slug",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Service Tree"
+      }
+    },
+    "/api/v1/skills": {
+      "post": {
+        "operationId": "add_skill_api_v1_skills_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SkillCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Add Skill"
+      }
+    },
+    "/api/v1/subservices": {
+      "get": {
+        "operationId": "list_subservices_api_v1_subservices_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "parent_type",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Parent Type"
+            }
+          },
+          {
+            "in": "query",
+            "name": "parent_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Parent Id"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Subservices"
+      },
+      "post": {
+        "operationId": "create_subservice_api_v1_subservices_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubServiceCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Subservice"
+      }
+    },
+    "/api/v1/subservices/{slug}": {
+      "delete": {
+        "operationId": "delete_subservice_api_v1_subservices__slug__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "title": "Slug",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Subservice"
+      },
+      "get": {
+        "operationId": "show_subservice_api_v1_subservices__slug__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "title": "Slug",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Show Subservice"
+      },
+      "patch": {
+        "operationId": "update_subservice_api_v1_subservices__slug__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "title": "Slug",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubServiceUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update Subservice"
+      }
+    },
+    "/api/v1/subservices/{slug}/tree": {
+      "get": {
+        "operationId": "subservice_tree_api_v1_subservices__slug__tree_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "title": "Slug",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Subservice Tree"
+      }
+    },
+    "/api/v1/validate": {
+      "post": {
+        "operationId": "validate_api_v1_validate_post",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "scope",
+            "required": false,
+            "schema": {
+              "default": "all",
+              "title": "Scope",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationRunOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Validate"
+      }
+    },
+    "/caddy-schutz/check": {
+      "get": {
+        "operationId": "caddy_schutz_check_caddy_schutz_check_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Caddy Schutz Check"
+      }
+    },
+    "/caddy-schutz/login": {
+      "get": {
+        "operationId": "caddy_schutz_login_form_caddy_schutz_login_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "next",
+            "required": false,
+            "schema": {
+              "default": "/",
+              "title": "Next",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Caddy Schutz Login Form"
+      },
+      "post": {
+        "operationId": "caddy_schutz_login_caddy_schutz_login_post",
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_caddy_schutz_login_caddy_schutz_login_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Caddy Schutz Login"
+      }
+    },
+    "/health": {
+      "get": {
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Health Health Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Health"
+      }
+    },
+    "/routes-ui": {
+      "get": {
+        "operationId": "routes_ui_legacy_routes_ui_get",
+        "responses": {
+          "200": {
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Routes Ui Legacy"
+      }
+    },
+    "/subdomains": {
+      "get": {
+        "operationId": "subdomains_ui_subdomains_get",
+        "responses": {
+          "200": {
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Subdomains Ui"
+      }
+    }
+  }
+}
