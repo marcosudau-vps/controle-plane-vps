@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 import shutil
+import socket
 import subprocess
 import tarfile
 import urllib.error
@@ -406,6 +407,7 @@ def restore_db_state(db: Session, export: dict[str, Any]) -> str:
         (models.ApiEntity, export.get("apis", []), "id"),
         (models.Skill, export.get("skills", []), "id"),
         (models.SecretRef, export.get("secret_refs", []), "id"),
+        (models.Relation, export.get("relations", []), "id"),
         (models.ServiceProfile, export.get("profiles", []), "service_id"),
         (models.ServiceAlias, export.get("aliases", []), "alias"),
         (models.DeploymentSource, export.get("deployment_sources", []), "id"),
@@ -426,6 +428,7 @@ def restore_db_state(db: Session, export: dict[str, Any]) -> str:
                     setattr(obj, key, value)
             else:
                 db.add(model(**row))
+        db.flush()
     return service.slug
 
 
@@ -496,7 +499,16 @@ def run_healthchecks_for_service(db: Session, slug: str) -> list[dict[str, Any]]
             except Exception as exc:
                 error = str(exc)
         elif check.check_type == "tcp":
-            error = "tcp healthcheck execution is not implemented in lifecycle restore v1"
+            from urllib.parse import urlsplit
+            try:
+                target = check.target if '://' in check.target else 'tcp://' + check.target
+                parsed = urlsplit(target)
+                if not parsed.hostname or not parsed.port:
+                    raise ValueError('TCP host and port required')
+                with socket.create_connection((parsed.hostname, parsed.port), timeout=check.timeout_seconds):
+                    passed = True
+            except (OSError, ValueError):
+                error = "TCP healthcheck failed"
         results.append({"id": check.id, "target": check.target, "check_type": check.check_type, "passed": passed, "error": error})
     return results
 

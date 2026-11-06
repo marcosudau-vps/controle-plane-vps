@@ -170,7 +170,13 @@ def update_profile(db, service, payload: ProfileUpdate):
     if row is None:
         row = models.ServiceProfile(service_id=service.id, revision=1, **data)
         db.add(row)
-        db.flush()
+        from sqlalchemy.exc import IntegrityError
+
+        try:
+            db.flush()
+        except IntegrityError:
+            db.rollback()
+            raise HTTPException(412, "profile was created concurrently") from None
     else:
         changed = (
             db.query(models.ServiceProfile)

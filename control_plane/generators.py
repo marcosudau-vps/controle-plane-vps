@@ -22,11 +22,12 @@ def _write(path: Path, content: str) -> str:
     with tempfile.NamedTemporaryFile("w", encoding="utf-8", dir=path.parent, delete=False) as f:
         f.write(content)
         temp = f.name
+    os.chmod(temp, 0o644)
     os.replace(temp, path)
     return hashlib.sha256(content.encode("utf-8")).hexdigest()
 
 
-def generate_caddy(db: Session, *, staging: bool = False) -> dict:
+def generate_caddy(db: Session, *, staging: bool = False, commit: bool = True) -> dict:
     from .routing import ownership_findings, options_for, route_hosts, proxy_lines
     findings = ownership_findings(db)
     if findings:
@@ -86,7 +87,10 @@ def generate_caddy(db: Session, *, staging: bool = False) -> dict:
     checksum = _write(path, "\n".join(lines))
     artifact = models.GeneratedArtifact(artifact_type="caddy", path=str(path), checksum=checksum, status="generated")
     db.add(artifact)
-    db.commit()
+    if commit:
+        db.commit()
+    else:
+        db.flush()
     return {"path": str(path), "checksum": checksum, "routes": generated_count}
 
 
@@ -110,6 +114,8 @@ def export_json(db: Session) -> dict:
                 "skills": [{"slug": s.slug, "type": s.skill_type, "path": s.path} for s in service.skills],
             }
         )
+    from .redaction import clean
+    payload = clean(payload)
     path = Path(settings.selfhost_root) / "exports" / "control-plane-export.json"
     checksum = _write(path, json.dumps({"services": payload}, indent=2, sort_keys=True))
     db.add(models.ExportRun(export_type="json", path=str(path), status="created"))

@@ -39,7 +39,25 @@ from .redaction import clean
 from .service import commit_or_409, log_activity
 from .storage import storage_inventory
 
-router = APIRouter(prefix="/api/v1")
+from .response_schemas import (
+    Envelope,
+    TechnicalContract,
+    RuntimeObservation,
+    OperationOut,
+)
+
+router = APIRouter(
+    prefix="/api/v1",
+    responses={
+        401: {"description": "Missing credentials"},
+        403: {"description": "Scope, protection or approval denied"},
+        404: {"description": "Unknown resource"},
+        409: {"description": "State or ownership conflict"},
+        412: {"description": "Stale revision or plan"},
+        422: {"description": "Invalid schema or policy"},
+        503: {"description": "Backend unavailable"},
+    },
+)
 
 
 def ok(data):
@@ -75,7 +93,7 @@ def catalog(
     )
 
 
-@router.get("/services/{slug}/contract")
+@router.get("/services/{slug}/contract", response_model=Envelope[TechnicalContract])
 def contract(
     slug: str,
     response: Response,
@@ -274,7 +292,9 @@ def registry_reconcile(
     return ok(runtime.reconcile(db))
 
 
-@router.get("/services/{slug}/runtime/status")
+@router.get(
+    "/services/{slug}/runtime/status", response_model=Envelope[list[RuntimeObservation]]
+)
 def status(
     slug: str, actor: Principal = Depends(principal), db: Session = Depends(get_session)
 ):
@@ -331,7 +351,7 @@ def logs(
         raise HTTPException(503, str(e)) from None
 
 
-@router.post("/services/{slug}/operations/plan")
+@router.post("/services/{slug}/operations/plan", response_model=Envelope[OperationOut])
 def operations_plan(
     slug: str,
     payload: OperationInput,
@@ -342,7 +362,11 @@ def operations_plan(
     return ok(object_data(create_plan(db, s, payload, actor)))
 
 
-@router.post("/operations/{operation_id}/execute", status_code=202)
+@router.post(
+    "/operations/{operation_id}/execute",
+    status_code=202,
+    response_model=Envelope[OperationOut],
+)
 def operations_execute(
     operation_id: str,
     payload: ExecuteInput,
@@ -358,7 +382,7 @@ def operations_execute(
     return ok(object_data(run))
 
 
-@router.get("/operations")
+@router.get("/operations", response_model=Envelope[list[OperationOut]])
 def operations(
     actor: Principal = Depends(principal),
     db: Session = Depends(get_session),
@@ -378,7 +402,7 @@ def operations(
     )
 
 
-@router.get("/operations/{operation_id}")
+@router.get("/operations/{operation_id}", response_model=Envelope[OperationOut])
 def operation(
     operation_id: str,
     actor: Principal = Depends(principal),

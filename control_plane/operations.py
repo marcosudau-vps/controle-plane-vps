@@ -181,6 +181,8 @@ def current_snapshot(db, service, payload):
     runtime.backend.compose(path, project, ["config", "-q"])
     containers = runtime.backend.containers(project)
     findings = []
+    if any(c.get("compose_file") != str(path) for c in containers):
+        findings.append("observed containers belong to a different Compose definition")
     if protected(db, service):
         findings.append(
             "protected core service: runtime mutations require a separately reviewed maintenance procedure"
@@ -334,6 +336,18 @@ def create_plan(db, service, payload, actor):
     return run
 
 
+def serialize_admission(func):
+    from functools import wraps
+
+    @wraps(func)
+    def wrapped(*args, **kwargs):
+        with operation_lock("queue-admission"):
+            return func(*args, **kwargs)
+
+    return wrapped
+
+
+@serialize_admission
 def queue_operation(db, run, payload, actor):
     service = db.get(models.Service, run.service_id)
     actor.check("deploy" if run.action in DEPLOY_ACTIONS else "runtime", service.slug)
@@ -343,6 +357,13 @@ def queue_operation(db, run, payload, actor):
         raise HTTPException(412, "plan hash mismatch")
     if run.status != "planned":
         return False
+    pending = (
+        db.query(models.OperationRun)
+        .filter(models.OperationRun.status.in_(["queued", "running"]))
+        .count()
+    )
+    if pending >= get_settings().max_pending_operations:
+        raise HTTPException(429, "operation queue capacity reached")
     if run.expires_at.replace(tzinfo=timezone.utc) < datetime.now(timezone.utc):
         raise HTTPException(412, "plan expired")
     if not payload.approved:
@@ -587,6 +608,22 @@ def run_operation(operation_id):
                         "images": images,
                         "release_id": release.id if release else None,
                     }
+                if action in {"start", "restart", "deploy", "update", "rollback"}:
+                    from .lifecycle.runner import run_healthchecks_for_service
+
+                    checks = [
+                        {
+                            "id": c["id"],
+                            "passed": c["passed"],
+                            "check_type": c["check_type"],
+                        }
+                        for c in run_healthchecks_for_service(db, service.slug)
+                    ]
+                    run.result = {**run.result, "healthchecks": checks}
+                    if any(not c["passed"] for c in checks):
+                        raise RuntimeError(
+                            "registered service healthcheck verification failed"
+                        )
                 run.status = "completed"
                 run.active_key = None
                 log_activity(

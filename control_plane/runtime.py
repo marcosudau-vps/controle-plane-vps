@@ -10,7 +10,7 @@ import yaml
 from fastapi import HTTPException
 from . import models
 from .config import get_settings
-from .contracts import safe_path
+from .contracts import safe_path, CORE_SERVICES
 
 NAME = re.compile(r"^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,119}$")
 COMPOSE_NAMES = (
@@ -79,6 +79,9 @@ class DockerBackend:
                         "image_ref": config.get("Image"),
                         "project": labels.get("com.docker.compose.project"),
                         "compose_service": labels.get("com.docker.compose.service"),
+                        "compose_file": labels.get(
+                            "com.docker.compose.project.config_files"
+                        ),
                         "state": state.get("Status", "unknown"),
                         "health": (state.get("Health") or {}).get("Status", "none"),
                         "restart_count": item.get("RestartCount", 0),
@@ -182,6 +185,8 @@ def runtime_config(db, service, runtime_id):
     if not p.is_file() or p.suffix not in {".yml", ".yaml"}:
         raise HTTPException(422, "registered path must be a Compose YAML file")
     project = runtime.compose_project or service.slug
+    if project in CORE_SERVICES and service.slug not in CORE_SERVICES:
+        raise HTTPException(403, "reserved infrastructure project")
     if not NAME.fullmatch(project) or project.startswith("-"):
         raise HTTPException(422, "invalid registered Compose project name")
     # Reject shared project ownership: commands affect a whole project, not only its registry row.
@@ -208,7 +213,76 @@ def runtime_config(db, service, runtime_id):
             )
     except (KeyError, ValueError, TypeError, yaml.YAMLError, OSError):
         raise HTTPException(422, "invalid registered Compose file") from None
+    owned_roots = [p.parent.resolve()]
+    for slug in [service.slug, *aliases]:
+        owned_roots.extend(
+            (
+                Path(get_settings().selfhost_root) / category / "services" / slug
+            ).resolve()
+            for category in ["apps", "data", "stacks"]
+        )
+        owned_roots.append(
+            (
+                Path(get_settings().outsourced_build_area_root) / "services" / slug
+            ).resolve()
+        )
+    explicit_secrets = {
+        str(Path(ref.ref).resolve())
+        for ref in service.secret_refs
+        if ref.provider == "file" and Path(ref.ref).is_absolute()
+    }
+
+    def owned_file(raw, *, readonly=False):
+        candidate = Path(str(raw))
+        candidate = candidate if candidate.is_absolute() else p.parent / candidate
+        resolved = candidate.resolve()
+        if any(resolved == base or base in resolved.parents for base in owned_roots):
+            return
+        secrets_root = (Path(get_settings().selfhost_root) / "secrets").resolve()
+        own_secret = resolved.parent == secrets_root and any(
+            resolved.name == slug + ".env" or resolved.name.startswith(slug + "-")
+            for slug in [service.slug, *aliases]
+        )
+        if readonly and (
+            own_secret
+            or str(resolved) in explicit_secrets
+            or str(resolved) in {"/etc/localtime", "/etc/timezone"}
+        ):
+            return
+        raise HTTPException(
+            422,
+            "Compose path is outside service ownership or registered secret references",
+        )
+
     for definition in services.values():
+        build = definition.get("build")
+        if build:
+            context = build.get("context", ".") if isinstance(build, dict) else build
+            owned_file(context)
+            if isinstance(build, dict) and build.get("dockerfile"):
+                base = Path(str(context))
+                base = base if base.is_absolute() else p.parent / base
+                owned_file(str(base / build["dockerfile"]))
+        env_files = definition.get("env_file", [])
+        for entry in env_files if isinstance(env_files, list) else [env_files]:
+            owned_file(
+                entry.get("path") if isinstance(entry, dict) else entry, readonly=True
+            )
+        for volume in definition.get("volumes", []):
+            if isinstance(volume, dict):
+                if volume.get("type") == "bind":
+                    owned_file(
+                        volume.get("source"), readonly=bool(volume.get("read_only"))
+                    )
+            elif isinstance(volume, str):
+                parts = volume.split(":")
+                if len(parts) > 1 and (
+                    parts[0].startswith(("/", ".")) or "/" in parts[0]
+                ):
+                    owned_file(
+                        parts[0],
+                        readonly=len(parts) > 2 and "ro" in parts[2].split(","),
+                    )
         if (
             definition.get("privileged")
             or definition.get("network_mode") == "host"

@@ -2,9 +2,36 @@ from uuid import uuid4
 from fastapi import Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from starlette.exceptions import HTTPException as StarletteHTTPException
+from .redaction import clean
 
 
 def install(app):
+    @app.exception_handler(StarletteHTTPException)
+    async def http_error(request, exc):
+        codes = {
+            400: "BAD_REQUEST",
+            401: "UNAUTHENTICATED",
+            403: "PERMISSION_DENIED",
+            404: "NOT_FOUND",
+            409: "STATE_CONFLICT",
+            412: "STALE_PLAN",
+            422: "VALIDATION_FAILED",
+            429: "CAPACITY_LIMIT",
+            503: "BACKEND_UNAVAILABLE",
+        }
+        return JSONResponse(
+            status_code=exc.status_code,
+            headers=exc.headers,
+            content={
+                "detail": clean(exc.detail),
+                "error": {
+                    "code": codes.get(exc.status_code, "REQUEST_FAILED"),
+                    "request_id": getattr(request.state, "request_id", None),
+                },
+            },
+        )
+
     from sqlalchemy.exc import SQLAlchemyError
 
     @app.exception_handler(SQLAlchemyError)

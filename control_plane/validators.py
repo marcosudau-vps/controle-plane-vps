@@ -42,7 +42,7 @@ def _result(severity: str, code: str, message: str, entity_kind: str = "", entit
 
 def _render_caddy_host(raw_host: str) -> str:
     legacy_token = "{$" + "SELFHOST" + "_CONTROL_PUBLIC_BASE_DOMAIN}"
-    return raw_host.strip().replace(legacy_token, render_domain_value("{base_domain}"))
+    return raw_host.strip().replace(legacy_token, render_domain_value("{base_domain}")).replace("{$CP_PUBLIC_BASE_DOMAIN}", render_domain_value("{base_domain}")).replace("{base_domain}", render_domain_value("{base_domain}"))
 
 
 def _caddy_hosts_from_file(path: Path) -> set[str]:
@@ -66,10 +66,11 @@ def _caddy_hosts_from_file(path: Path) -> set[str]:
     return hosts
 
 
-def configured_caddy_hosts() -> set[str]:
+def configured_caddy_hosts(*, include_generated: bool = True) -> set[str]:
     settings = get_settings()
     files: list[Path] = []
-    files.extend(path for path in Path(settings.generated_caddy_dir).glob("*.caddy") if path.name != "auto_cert_zones.caddy")
+    if include_generated:
+        files.extend(path for path in Path(settings.generated_caddy_dir).glob("*.caddy") if path.name != "auto_cert_zones.caddy")
     from .routing import override_files
     files.extend(override_files())
     hosts: set[str] = set()
@@ -152,7 +153,7 @@ def validate_all(db: Session, scope: str = "all") -> list[dict]:
         if parsed.scheme not in {"http", "https"} or not parsed.netloc:
             results.append(_result("error", "route.upstream.invalid", f"Invalid upstream for {route.host}: {route.upstream}", "route", route.id))
 
-    for caddy_host in sorted(configured_caddy_hosts() - registered_hosts):
+    for caddy_host in sorted(configured_caddy_hosts(include_generated=scope != "caddy-apply") - registered_hosts):
         results.append(_result("fatal", "route.registry.missing", f"Caddy host is not registered in Control Plane routes: {caddy_host}", "route", ""))
 
     port_keys: set[tuple[int, str]] = set()

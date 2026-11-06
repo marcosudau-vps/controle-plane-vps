@@ -4,7 +4,7 @@ import re
 from urllib.parse import urlsplit, urlunsplit
 
 SENSITIVE = re.compile(
-    r"(?i)(password|passwd|token|api.?key|cookie.?secret|credential|private.?key|authorization|environment)"
+    r"(?i)(password|passwd|token|api.?key|secret|credential|private.?key|authorization|environment)"
 )
 ASSIGNMENT = re.compile(
     r"(?i)\b(password|passwd|token|api_key|secret)\s*[=:]\s*[^\s,;]+"
@@ -14,7 +14,11 @@ ASSIGNMENT = re.compile(
 def clean(value):
     if isinstance(value, dict):
         return {
-            str(k): clean(v) for k, v in value.items() if not SENSITIVE.search(str(k))
+            str(k): clean(v)
+            for k, v in value.items()
+            if str(k) in {"secret_refs", "secret_ref_ids"}
+            or (str(k).endswith("_count") and isinstance(v, int))
+            or not SENSITIVE.search(str(k))
         }
     if isinstance(value, (list, tuple)):
         return [clean(v) for v in value]
@@ -37,7 +41,9 @@ def clean(value):
 def reject_secret_fields(value):
     if isinstance(value, dict):
         for k, v in value.items():
-            if SENSITIVE.search(str(k)):
+            if str(k) not in {"secret_refs", "secret_ref_ids"} and SENSITIVE.search(
+                str(k)
+            ):
                 raise ValueError(
                     "secret values and environment fields are not permitted"
                 )
@@ -47,3 +53,35 @@ def reject_secret_fields(value):
             reject_secret_fields(v)
     elif isinstance(value, str) and clean(value) != value:
         raise ValueError("secret-like value is not permitted")
+
+
+def command_text(text, environment):
+    """Remove configured values before returning output from privileged helpers."""
+    values = set()
+
+    def collect(value):
+        if isinstance(value, dict):
+            for v in value.values():
+                collect(v)
+        elif isinstance(value, list):
+            for v in value:
+                collect(v)
+        elif isinstance(value, str) and len(value) >= 4:
+            values.add(value)
+
+    for key, value in environment.items():
+        if SENSITIVE.search(key) or re.search(r"(?i)secret|logins", key):
+            try:
+                collect(__import__("json").loads(value))
+            except (ValueError, TypeError):
+                collect(value)
+        if isinstance(value, str) and "://" in value:
+            try:
+                parsed = urlsplit(value)
+                if parsed.password:
+                    collect(parsed.password)
+            except ValueError:
+                pass
+    for value in sorted(values, key=len, reverse=True):
+        text = text.replace(value, "[REDACTED]")
+    return clean(text)

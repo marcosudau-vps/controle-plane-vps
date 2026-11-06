@@ -29,6 +29,7 @@ _ENV_TYPES: dict[str, type] = {
     "runtime_apply_enabled": bool,
     "operation_timeout_seconds": int,
     "minimum_available_memory_mib": int,
+    "max_pending_operations": int,
 }
 
 
@@ -72,6 +73,7 @@ class Settings:
     runtime_apply_enabled: bool = False
     operation_timeout_seconds: int = 900
     minimum_available_memory_mib: int = 256
+    max_pending_operations: int = 20
     operations_dir: str = ""
     # JSON configured by the administrator, never returned by the API.
     scoped_tokens: str = "{}"

@@ -32,7 +32,8 @@ def _json(obj: Any) -> str:
         if isinstance(o, datetime):
             return o.isoformat()
         return str(o)
-    return json.dumps(obj, default=ser, indent=2, sort_keys=True)
+    from control_plane.redaction import clean
+    return json.dumps(clean(obj), default=ser, indent=2, sort_keys=True)
 
 
 # ============ Tool Implementations ============

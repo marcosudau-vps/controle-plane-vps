@@ -51,6 +51,7 @@ def db_inventory(db: Session, slug: str) -> dict[str, Any]:
     runtime_ids = [r.id for r in service.runtimes]
     route_ids = [r.id for r in service.routes]
     return {
+        "relations": [object_dict(x) for x in db.query(models.Relation).filter((models.Relation.source_id == service.id) | (models.Relation.target_id == service.id))],
         "profiles": [object_dict(x) for x in db.query(models.ServiceProfile).filter_by(service_id=service.id)],
         "aliases": [object_dict(x) for x in db.query(models.ServiceAlias).filter_by(service_id=service.id)],
         "deployment_sources": [object_dict(x) for x in db.query(models.DeploymentSource).filter(models.DeploymentSource.runtime_id.in_(runtime_ids))],
