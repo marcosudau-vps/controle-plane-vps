@@ -4,6 +4,7 @@ import json
 import re
 from pathlib import Path
 from typing import Literal
+from fastapi import HTTPException
 from pydantic import Field, field_validator
 from . import models
 from .config import get_settings
@@ -181,3 +182,55 @@ def proxy_lines(route, opts, indent):
         ],
         f"{indent}}}",
     ]
+
+
+def render_path_site(db, routes, settings):
+    """One host group with explicit host AND path matchers, ordered before the fallback."""
+    from .caddy_protection import resolve_route_protection
+
+    if len({r.tls for r in routes}) != 1:
+        raise HTTPException(409, "TLS settings must agree for routes sharing a host")
+    hosts = sorted({h for route in routes for h in route_hosts(db, route)})
+    if not routes[0].tls:
+        hosts = ["http://" + h for h in hosts]
+    lines = [", ".join(hosts) + " {"]
+    options = {r.id: options_for(db, r) for r in routes}
+    if routes[0].tls and any(
+        o["tls_profile"] == "cloudflare_dns01" for o in options.values()
+    ):
+        lines += [
+            "    tls {",
+            "        dns cloudflare {env.CLOUDFLARE_TOKEN_DNS_EDIT}",
+            "    }",
+        ]
+    ordered = sorted(routes, key=lambda r: (r.path == "/", -len(r.path), r.path, r.id))
+    for route in ordered:
+        matcher = "route_" + route.id.replace("-", "")
+        lines += [
+            f"    @{matcher} {{",
+            "        host " + " ".join(route_hosts(db, route)),
+        ]
+        if route.path != "/":
+            lines.append("        path " + json.dumps(route.path + "*"))
+        lines.append("    }")
+    lines.append("    route {")
+    if settings.caddy_protection_enabled and any(
+        resolve_route_protection(db, r) for r in routes
+    ):
+        lines += [
+            "        handle /caddy-schutz/* {",
+            "            reverse_proxy 127.0.0.1:8765",
+            "        }",
+        ]
+    for route in ordered:
+        opts = options[route.id]
+        matcher = "route_" + route.id.replace("-", "")
+        lines.append(f"        handle @{matcher} {{")
+        for key, value in sorted(opts["response_headers"].items()):
+            lines.append(f"            header {key} {json.dumps(value)}")
+        if settings.caddy_protection_enabled and resolve_route_protection(db, route):
+            lines.append("            import caddy_schutz_forward_auth")
+        lines += proxy_lines(route, opts, "            ")
+        lines.append("        }")
+    lines += ["    }", "}", ""]
+    return lines

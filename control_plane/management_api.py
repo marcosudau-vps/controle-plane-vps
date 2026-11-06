@@ -683,6 +683,13 @@ def route_options(
         raise HTTPException(422, "assign route to a service before configuring options")
     actor.check("configure", service.slug)
     if payload.owner_kind == "manual_override":
+        if (
+            route.upstream == get_settings().namespace_placeholder_upstream
+            and route.auth_policy == "caddy_schutz"
+        ):
+            raise HTTPException(
+                403, "namespace placeholder protection must be preserved"
+            )
         allowed = {str(p.resolve()) for p in override_files()}
         if str(Path(payload.owner_ref).resolve()) not in allowed:
             raise HTTPException(

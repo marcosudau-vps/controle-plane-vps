@@ -544,3 +544,28 @@ def test_extended_contract_rows_survive_snapshot_restore(managed):
     assert (
         restored["profile"]["description"] == "Stored profile" and restored["relations"]
     )
+
+
+def test_reconcile_detects_unregistered_and_alias_runtime_drift_without_writes(managed):
+    c, rt, f = managed
+    from pathlib import Path
+    from control_plane.config import get_settings
+
+    c.post("/api/v1/services", json={"slug": "redis-canonical", "title": "Redis"})
+    c.post("/api/v1/services/redis-canonical/aliases", json={"alias": "redis-stack"})
+    for slug in ["opencode", "redis-stack"]:
+        p = Path(get_settings().selfhost_root) / "stacks/services" / slug
+        p.mkdir(parents=True)
+        (p / "compose.yaml").write_text("services:\n  app:\n    image: example/app:1\n")
+    before = c.get("/api/v1/catalog").json()["data"]["total"]
+    result = c.get("/api/v1/registry/reconcile").json()["data"]
+    assert result["applied"] is False
+    assert any(
+        r["code"] == "stack.unregistered" and r["slug"] == "opencode"
+        for r in result["findings"]
+    )
+    assert any(
+        r["code"] == "runtime.missing" and r["slug"] == "redis-stack"
+        for r in result["findings"]
+    )
+    assert c.get("/api/v1/catalog").json()["data"]["total"] == before

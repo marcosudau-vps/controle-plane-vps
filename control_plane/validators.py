@@ -97,7 +97,7 @@ def validate_all(db: Session, scope: str = "all") -> list[dict]:
         if login_count == 0 and api_key_count == 0:
             results.append(_result("warning", "caddy_schutz.credentials.missing", "Caddy-Schutz is enabled but no logins or API keys are configured", "config", ""))
         if settings.caddy_protection_cookie_enabled and not (settings.caddy_protection_cookie_secret or settings.api_token):
-            results.append(_result("warning", "caddy_schutz.cookie_secret.missing", "Cookie auth uses the development fallback secret; configure CP_CADDY_PROTECTION_COOKIE_SECRET in production", "config", ""))
+            results.append(_result("warning", "caddy_schutz.cookie_secret.missing", "Cookie authentication is unavailable; configure CP_CADDY_PROTECTION_COOKIE_SECRET in production", "config", ""))
 
     for service in services:
         if not SERVICE_RE.match(service.slug):

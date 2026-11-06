@@ -75,6 +75,16 @@ def test_typed_headers_tls_wildcard_and_manual_owner(client, tmp_path):
     opts = {"owner_kind": "manual_override", "owner_ref": str(p)}
     assert (
         client.put("/api/v1/routes/" + route["id"] + "/options", json=opts).status_code
+        == 403
+    )
+    assert (
+        client.patch(
+            "/api/v1/routes/" + route["id"], json={"upstream": "http://127.0.0.1:8080"}
+        ).status_code
+        == 200
+    )
+    assert (
+        client.put("/api/v1/routes/" + route["id"] + "/options", json=opts).status_code
         == 200
     )
     text = Path(
@@ -528,3 +538,47 @@ def test_actual_cp_domain_variable_in_current_overrides(client):
         and "missing.marcosudau.com" in r["message"]
         for r in response["results"]
     )
+
+
+def test_path_routes_require_their_host_and_keep_root_fallback(client, tmp_path):
+    import os, json, subprocess
+
+    client.post(
+        "/api/v1/services", json={"slug": "path-sample", "title": "Path sample"}
+    )
+    for path, port in [("/api", 9001), ("/", 9002)]:
+        r = client.post(
+            "/api/v1/routes",
+            json={
+                "service_slug": "path-sample",
+                "host": "scoped.example.test",
+                "path": path,
+                "upstream": f"http://127.0.0.1:{port}",
+            },
+        )
+        assert r.status_code == 200, r.text
+    r = client.post("/api/v1/generate/caddy")
+    assert r.status_code == 200, r.text
+    generated = Path(r.json()["data"]["path"])
+    text = generated.read_text()
+    assert "scoped.example.test /api* {" not in text
+    assert "host scoped.example.test" in text and 'path "/api*"' in text
+    binary = os.environ.get("CP_TEST_CADDY_BINARY")
+    if binary:
+        result = subprocess.run(
+            [binary, "adapt", "--config", str(generated), "--adapter", "caddyfile"],
+            capture_output=True,
+            text=True,
+        )
+        assert result.returncode == 0, result.stderr
+        adapted = json.loads(result.stdout)
+        found = False
+        for server in adapted["apps"]["http"]["servers"].values():
+            for route in server.get("routes", []):
+                for match in route.get("match", []):
+                    assert "path" not in match, (
+                        "a top-level path-only alternative would match foreign hosts"
+                    )
+                    if "scoped.example.test" in match.get("host", []):
+                        found = True
+        assert found

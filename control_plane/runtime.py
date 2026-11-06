@@ -368,7 +368,9 @@ def reconcile(db):
     for p in sorted(root.iterdir() if root.exists() else []):
         if p.is_dir() and any((p / n).exists() for n in COMPOSE_NAMES):
             s = registered.get(p.name)
-            if not s and p.name not in aliases:
+            if s is None and p.name in aliases:
+                s = db.get(models.Service, aliases[p.name])
+            if not s:
                 findings.append(
                     {
                         "code": "stack.unregistered",

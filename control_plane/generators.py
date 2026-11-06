@@ -47,8 +47,20 @@ def generate_caddy(db: Session, *, staging: bool = False, commit: bool = True) -
                 "",
             ]
         )
+    groups = {}
+    for item in routes:
+        groups.setdefault(render_domain_value(item.host), []).append(item)
     generated_count = 0
-    for route in routes:
+    for group in groups.values():
+        generated = [item for item in group if options_for(db, item)["owner_kind"] != "manual_override"]
+        if not generated:
+            continue
+        if len(generated) > 1 or generated[0].path != "/":
+            from .routing import render_path_site
+            lines.extend(render_path_site(db, generated, settings))
+            generated_count += len(generated)
+            continue
+        route = generated[0]
         opts = options_for(db, route)
         if opts["owner_kind"] == "manual_override":
             continue
