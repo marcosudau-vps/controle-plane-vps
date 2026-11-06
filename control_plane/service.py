@@ -31,7 +31,7 @@ def commit_or_409(db: Session) -> None:
         db.commit()
     except IntegrityError as exc:
         db.rollback()
-        raise HTTPException(status_code=409, detail=f"constraint violation: {exc.orig}") from exc
+        raise HTTPException(status_code=409, detail="registry constraint violation") from exc
 
 
 def flush_or_409(db: Session) -> None:
@@ -39,7 +39,7 @@ def flush_or_409(db: Session) -> None:
         db.flush()
     except IntegrityError as exc:
         db.rollback()
-        raise HTTPException(status_code=409, detail=f"constraint violation: {exc.orig}") from exc
+        raise HTTPException(status_code=409, detail="registry constraint violation") from exc
 
 
 def get_service_by_slug(db: Session, slug: str) -> models.Service:

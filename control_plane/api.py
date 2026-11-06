@@ -54,6 +54,7 @@ from .schemas import (
     ValidationRunOut,
 )
 from .security import require_token
+from .operations import serialize_registry
 from .service import commit_or_409, flush_or_409, get_service_by_slug, log_activity
 from .lifecycle.manifests import ManifestError, load_all_manifests, load_manifest, manifest_summary
 from .lifecycle.planner import build_service_plan
@@ -72,6 +73,8 @@ from .validators import persist_validation_run
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     init_db()
+    from .operations import recover_operations
+    recover_operations()
     yield
 
 
@@ -83,7 +86,8 @@ def ok(data: Any = None) -> ApiResponse:
 
 
 def as_dict(obj: Any) -> dict:
-    return {column.name: getattr(obj, column.name) for column in obj.__table__.columns}
+    from .redaction import clean
+    return clean({column.name: getattr(obj, column.name) for column in obj.__table__.columns})
 
 
 def rendered_route_exists(db: Session, host: str, path: str = "/") -> bool:
@@ -151,7 +155,7 @@ def caddy_schutz_login(
 ) -> Response:
     if not verify_login(username, password):
         raise HTTPException(status_code=401, detail="invalid login")
-    target = next if next.startswith("/") else "/"
+    target = next if next.startswith("/") and not next.startswith("//") else "/"
     response = RedirectResponse(target, status_code=303)
     settings = get_settings()
     if remember and settings.caddy_protection_cookie_enabled:
@@ -381,7 +385,10 @@ def list_services(db: Session = Depends(get_session)) -> ApiResponse:
 
 
 @app.post("/api/v1/services", dependencies=[Depends(require_token)])
+@serialize_registry
 def create_service(payload: ServiceCreate, db: Session = Depends(get_session)) -> ApiResponse:
+    if db.get(models.ServiceAlias, payload.slug):
+        raise HTTPException(status_code=409, detail="slug conflicts with an existing alias")
     service = models.Service(**payload.model_dump())
     db.add(service)
     if service.port_base is None:
@@ -446,6 +453,12 @@ def archive_service(slug: str, db: Session = Depends(get_session)) -> ApiRespons
 @app.delete("/api/v1/services/{slug}", dependencies=[Depends(require_token)])
 def delete_service(slug: str, db: Session = Depends(get_session)) -> ApiResponse:
     service = get_service_by_slug(db, slug)
+    from .contracts import protected
+    if protected(db, service):
+        raise HTTPException(status_code=403, detail="protected service cannot be deleted")
+    archived = db.query(models.LifecycleRun).filter_by(service_slug=slug, action="archive", status="completed").first()
+    if service.status != "archived" or not archived:
+        raise HTTPException(status_code=409, detail="a completed lifecycle archive is required before deletion")
     direct_subs = (
         db.query(models.SubService)
         .filter(models.SubService.parent_type == "service", models.SubService.parent_id == service.id)
@@ -532,8 +545,11 @@ def subservice_tree(slug: str, db: Session = Depends(get_session)) -> ApiRespons
 
 
 @app.post("/api/v1/managed-services/provision", dependencies=[Depends(require_token)])
+@serialize_registry
 def provision_managed_service(payload: ManagedServiceProvisionCreate, db: Session = Depends(get_session)) -> ApiResponse:
     settings = get_settings()
+    if db.get(models.ServiceAlias, payload.slug):
+        raise HTTPException(status_code=409, detail="slug conflicts with an existing alias")
     if db.query(models.Service).filter(models.Service.slug == payload.slug).one_or_none():
         raise HTTPException(status_code=409, detail=f"service already exists: {payload.slug}")
 
@@ -590,13 +606,14 @@ def provision_managed_service(payload: ManagedServiceProvisionCreate, db: Sessio
 
     doc_path = payload.doc_path or f"{settings.selfhost_root}/docs/services/{payload.slug}/overview.{payload.slug}.md"
     doc_title = payload.doc_title or f"{payload.title} Betrieb"
-    doc_file = Path(doc_path)
+    from .contracts import safe_path
+    doc_file = safe_path(doc_path, Path(settings.selfhost_root) / "docs" / "services" / payload.slug)
     doc_file.parent.mkdir(parents=True, exist_ok=True)
     if not doc_file.exists():
         rendered_host = render_domain_value(f"{payload.subdomain}.{{base_domain}}")
         doc_file.write_text(
             f"# {payload.title}\n\n"
-            f"Status: migriert ueber Backstage Template / Control Plane.\n\n"
+            f"Status: registriert ueber die Control Plane.\n\n"
             f"## Zweck\n\n{payload.summary or payload.title}\n\n"
             f"## Betrieb\n\n"
             f"- Stack: `{runtime_path}`\n"
@@ -1049,7 +1066,7 @@ def generate_all_endpoint(db: Session = Depends(get_session)) -> ApiResponse:
 @app.post("/api/v1/deploy/caddy/plan", dependencies=[Depends(require_token)])
 def caddy_plan(db: Session = Depends(get_session)) -> ApiResponse:
     validation_run = persist_validation_run(db, "caddy")
-    artifact = generate_caddy(db)
+    artifact = generate_caddy(db, staging=True)
     cert_zone_plans = run_caddy_cert_zones_for_routes(db, apply=False, no_reload=True)
     return ok({"validation_status": validation_run.status, "artifact": artifact, "cert_zone_plans": cert_zone_plans, "apply_allowed": validation_run.status == "passed"})
 
@@ -1180,6 +1197,8 @@ def add_comment(payload: CommentCreate, db: Session = Depends(get_session)) -> A
 @app.get("/api/v1/agent-context/{slug}", dependencies=[Depends(require_token)])
 def agent_context(slug: str, db: Session = Depends(get_session)) -> ApiResponse:
     service = get_service_by_slug(db, slug)
+    from .contracts import service_contract
+    from .policies import effective_rules
     return ok(
         {
             "service": as_dict(service),
@@ -1187,10 +1206,12 @@ def agent_context(slug: str, db: Session = Depends(get_session)) -> ApiResponse:
             "docs": [as_dict(doc) for doc in service.docs],
             "skills": [as_dict(skill) for skill in service.skills],
             "healthchecks": [as_dict(check) for check in service.healthchecks],
+            "contract": service_contract(db, service),
+            "policies": effective_rules(db, service),
             "rules": [
                 "Use control-plane or the Control Plane for changes.",
-                "Do not edit generated Caddy or Backstage files manually.",
-                "Do not store secret values in docs, Backstage, exports, or git.",
+                "Do not edit generated Caddy files manually.",
+                "Do not store secret values in docs, exports, or git.",
             ],
         }
     )
@@ -1208,3 +1229,10 @@ def meta() -> ApiResponse:
             "domain_note": "public_base_domain is provisional during development; set it to target_base_domain for final cutover.",
         }
     )
+
+
+from .management_api import router as management_router
+app.include_router(management_router)
+
+from .http_security import install as install_http_security
+install_http_security(app)

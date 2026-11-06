@@ -14,6 +14,8 @@ RUN apt-get update \
 COPY --from=caddybin /usr/bin/caddy /usr/bin/caddy
 COPY pyproject.toml /app/pyproject.toml
 COPY control_plane /app/control_plane
+COPY alembic.ini /app/alembic.ini
+COPY migrations /app/migrations
 
 RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir .

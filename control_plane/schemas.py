@@ -3,7 +3,7 @@ import re
 from typing import Any
 from urllib.parse import urlparse
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 
 SLUG_PATTERN = r"^[a-z0-9][a-z0-9-]{1,78}[a-z0-9]$"
@@ -17,7 +17,17 @@ class ApiResponse(BaseModel):
     error: dict[str, Any] | None = None
 
 
-class ServiceCreate(BaseModel):
+class SafeMetadataModel(BaseModel):
+    @model_validator(mode="before")
+    @classmethod
+    def reject_embedded_secrets(cls, value):
+        from .redaction import reject_secret_fields
+        if isinstance(value, dict):
+            reject_secret_fields(value)
+        return value
+
+
+class ServiceCreate(SafeMetadataModel):
     slug: str = Field(pattern=SLUG_PATTERN)
     title: str = Field(min_length=2, max_length=160)
     summary: str = ""
@@ -52,7 +62,7 @@ class ServiceCreate(BaseModel):
         return value
 
 
-class ManagedServiceProvisionCreate(BaseModel):
+class ManagedServiceProvisionCreate(SafeMetadataModel):
     slug: str = Field(pattern=SLUG_PATTERN)
     title: str = Field(min_length=2, max_length=160)
     summary: str = ""
@@ -91,7 +101,7 @@ class ManagedServiceProvisionCreate(BaseModel):
         return value
 
 
-class ServiceUpdate(BaseModel):
+class ServiceUpdate(SafeMetadataModel):
     title: str | None = None
     summary: str | None = None
     system: str | None = None
@@ -185,6 +195,8 @@ class RouteCreate(BaseModel):
     def path_starts_with_slash(cls, value: str) -> str:
         if not value.startswith("/"):
             raise ValueError("path must start with /")
+        if any(c in value for c in ["\n", "\r", "{", "}", " ", "\t", "\\"]):
+            raise ValueError("path contains unsafe Caddy syntax")
         return value
 
     @field_validator("host")
@@ -194,7 +206,7 @@ class RouteCreate(BaseModel):
         if not clean or "/" in clean or ":" in clean or ".." in clean:
             raise ValueError("host must be a hostname or hostname template")
         rendered = clean.replace("{base_domain}", "marcosudau.com")
-        if "{" in rendered or "}" in rendered or not HOST_PATTERN.match(rendered):
+        if "{" in rendered or "}" in rendered or not HOST_PATTERN.fullmatch(rendered.removeprefix("*.")):
             raise ValueError("host must be a valid hostname or {base_domain} hostname template")
         return clean
 
@@ -202,8 +214,8 @@ class RouteCreate(BaseModel):
     @classmethod
     def validate_upstream(cls, value: str) -> str:
         parsed = urlparse(value)
-        if parsed.scheme not in {"http", "https"} or not parsed.netloc:
-            raise ValueError("upstream must be an absolute http(s) URL")
+        if parsed.scheme not in {"http", "https"} or not parsed.netloc or parsed.username or parsed.password or parsed.query or parsed.fragment or parsed.path not in {"", "/"} or any(c.isspace() or c in "{}\\\"" for c in value):
+            raise ValueError("upstream must be a credential-free http(s) origin without Caddy syntax")
         return value
 
     @field_validator("parent_type")
@@ -319,7 +331,7 @@ class PortCreate(BaseModel):
         return value
 
 
-class RuntimeCreate(BaseModel):
+class RuntimeCreate(SafeMetadataModel):
     service_slug: str
     runtime_type: str
     path: str = ""
@@ -336,7 +348,7 @@ class RuntimeCreate(BaseModel):
         return value
 
 
-class ResourceCreate(BaseModel):
+class ResourceCreate(SafeMetadataModel):
     service_slug: str | None = None
     slug: str = Field(pattern=SLUG_PATTERN)
     title: str

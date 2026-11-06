@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from uuid import uuid4
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint
+from sqlalchemy import CheckConstraint, Boolean, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.types import JSON
@@ -130,6 +130,8 @@ class Runtime(Base, TimestampMixin):
     compose_project: Mapped[str] = mapped_column(String(120), default="", nullable=False)
     systemd_unit: Mapped[str] = mapped_column(String(120), default="", nullable=False)
     restart_policy: Mapped[str] = mapped_column(String(80), default="", nullable=False)
+    desired_state: Mapped[str] = mapped_column(String(40), default="manual", server_default="manual", nullable=False)
+    autostart_policy: Mapped[str] = mapped_column(String(40), default="on_demand", server_default="on_demand", nullable=False)
     metadata_json: Mapped[dict] = mapped_column(JsonType, default=dict, nullable=False)
 
     service: Mapped[Service] = relationship(back_populates="runtimes")
@@ -316,3 +318,87 @@ class LifecycleRun(Base, TimestampMixin):
     request_json: Mapped[dict] = mapped_column(JsonType, default=dict, nullable=False)
     result_json: Mapped[dict] = mapped_column(JsonType, default=dict, nullable=False)
     error: Mapped[str] = mapped_column(Text, default="", nullable=False)
+
+
+class ServiceProfile(Base, TimestampMixin):
+    __tablename__ = "service_profiles"
+    service_id: Mapped[str] = mapped_column(ForeignKey("services.id", ondelete="CASCADE"), primary_key=True)
+    revision: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
+    description: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    category: Mapped[str] = mapped_column(String(80), default="", nullable=False)
+    protected: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    archivable: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    snapshot_supported: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    paths: Mapped[dict] = mapped_column(JsonType, default=dict, nullable=False)
+
+
+class ServiceAlias(Base):
+    __tablename__ = "service_aliases"
+    alias: Mapped[str] = mapped_column(String(80), primary_key=True)
+    service_id: Mapped[str] = mapped_column(ForeignKey("services.id", ondelete="CASCADE"), nullable=False, index=True)
+
+
+class DeploymentSource(Base, TimestampMixin):
+    __tablename__ = "deployment_sources"
+    __table_args__ = (UniqueConstraint("runtime_id", "compose_service", name="uq_source_runtime_service"), CheckConstraint("source_kind IN ('registry_image', 'compose_build', 'external_build')", name="ck_source_kind"),)
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
+    runtime_id: Mapped[str] = mapped_column(ForeignKey("runtimes.id", ondelete="CASCADE"), nullable=False)
+    compose_service: Mapped[str] = mapped_column(String(120), nullable=False)
+    source_kind: Mapped[str] = mapped_column(String(40), nullable=False)
+    image_ref: Mapped[str] = mapped_column(String(255), nullable=False)
+    workflow_id: Mapped[str] = mapped_column(String(80), default="", nullable=False)
+
+
+class OperationRun(Base, TimestampMixin):
+    __tablename__ = "operation_runs"
+    __table_args__ = (UniqueConstraint("actor", "idempotency_key", name="uq_operation_actor_key"), CheckConstraint("status IN ('planned', 'queued', 'running', 'completed', 'failed', 'interrupted')", name="ck_operation_status"),)
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
+    service_id: Mapped[str] = mapped_column(ForeignKey("services.id"), nullable=False, index=True)
+    runtime_id: Mapped[str] = mapped_column(ForeignKey("runtimes.id"), nullable=False)
+    actor: Mapped[str] = mapped_column(String(120), nullable=False)
+    action: Mapped[str] = mapped_column(String(40), nullable=False)
+    status: Mapped[str] = mapped_column(String(40), default="planned", nullable=False)
+    # Unique while queued/running: serializes operations across API processes.
+    active_key: Mapped[str | None] = mapped_column(String(120), unique=True, nullable=True)
+    idempotency_key: Mapped[str] = mapped_column(String(120), nullable=False)
+    plan_hash: Mapped[str] = mapped_column(String(64), nullable=False)
+    plan: Mapped[dict] = mapped_column(JsonType, nullable=False)
+    result: Mapped[dict] = mapped_column(JsonType, default=dict, nullable=False)
+    events: Mapped[list] = mapped_column(JsonType, default=list, nullable=False)
+    error: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class DeploymentRelease(Base, TimestampMixin):
+    __tablename__ = "deployment_releases"
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
+    operation_id: Mapped[str] = mapped_column(ForeignKey("operation_runs.id"), nullable=False)
+    runtime_id: Mapped[str] = mapped_column(ForeignKey("runtimes.id"), nullable=False, index=True)
+    previous_images: Mapped[dict] = mapped_column(JsonType, nullable=False)
+    images: Mapped[dict] = mapped_column(JsonType, default=dict, nullable=False)
+    compose_checksum: Mapped[str] = mapped_column(String(64), nullable=False)
+    status: Mapped[str] = mapped_column(String(40), default="prepared", nullable=False)
+
+
+class PolicyRule(Base, TimestampMixin):
+    __tablename__ = "policy_rules"
+    __table_args__ = (UniqueConstraint("rule_id", "version", name="uq_policy_version"), CheckConstraint("version > 0", name="ck_policy_version"), CheckConstraint("severity IN ('block', 'requires_approval', 'warning', 'info')", name="ck_policy_severity"),)
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
+    rule_id: Mapped[str] = mapped_column(String(80), nullable=False)
+    version: Mapped[int] = mapped_column(Integer, nullable=False)
+    service_id: Mapped[str | None] = mapped_column(ForeignKey("services.id"), nullable=True)
+    severity: Mapped[str] = mapped_column(String(30), nullable=False)
+    actions: Mapped[list] = mapped_column(JsonType, nullable=False)
+    message: Mapped[str] = mapped_column(Text, nullable=False)
+    owner: Mapped[str] = mapped_column(String(80), nullable=False)
+
+
+class RouteOptions(Base, TimestampMixin):
+    __tablename__ = "route_options"
+    route_id: Mapped[str] = mapped_column(ForeignKey("routes.id", ondelete="CASCADE"), primary_key=True)
+    host_aliases: Mapped[list] = mapped_column(JsonType, default=list, nullable=False)
+    upstream_headers: Mapped[dict] = mapped_column(JsonType, default=dict, nullable=False)
+    response_headers: Mapped[dict] = mapped_column(JsonType, default=dict, nullable=False)
+    tls_profile: Mapped[str] = mapped_column(String(40), default="default", nullable=False)
+    owner_kind: Mapped[str] = mapped_column(String(40), default="generated", nullable=False)
+    owner_ref: Mapped[str] = mapped_column(String(255), default="", nullable=False)

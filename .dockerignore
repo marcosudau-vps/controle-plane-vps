@@ -6,5 +6,5 @@ __pycache__
 control-plane-dev.db
 .venv
 .env
-migrations
 backups
+.git

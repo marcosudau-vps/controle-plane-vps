@@ -1,0 +1,218 @@
+{
+  "activity_log": {
+    "id": "VARCHAR(36)",
+    "created_at": "TIMESTAMP WITH TIME ZONE",
+    "actor": "VARCHAR(120)",
+    "action": "VARCHAR(120)",
+    "entity_kind": "VARCHAR(40)",
+    "entity_id": "VARCHAR(36)",
+    "detail": "JSONB"
+  },
+  "comments": {
+    "id": "VARCHAR(36)",
+    "entity_kind": "VARCHAR(40)",
+    "entity_id": "VARCHAR(36)",
+    "body": "TEXT",
+    "author": "VARCHAR(120)",
+    "created_at": "TIMESTAMP WITH TIME ZONE",
+    "updated_at": "TIMESTAMP WITH TIME ZONE"
+  },
+  "export_runs": {
+    "id": "VARCHAR(36)",
+    "created_at": "TIMESTAMP WITH TIME ZONE",
+    "export_type": "VARCHAR(40)",
+    "path": "VARCHAR(255)",
+    "status": "VARCHAR(40)"
+  },
+  "generated_artifacts": {
+    "id": "VARCHAR(36)",
+    "artifact_type": "VARCHAR(40)",
+    "path": "VARCHAR(255)",
+    "status": "VARCHAR(40)",
+    "checksum": "VARCHAR(128)",
+    "created_at": "TIMESTAMP WITH TIME ZONE",
+    "updated_at": "TIMESTAMP WITH TIME ZONE"
+  },
+  "lifecycle_runs": {
+    "id": "VARCHAR(36)",
+    "service_slug": "VARCHAR(80)",
+    "action": "VARCHAR(40)",
+    "status": "VARCHAR(40)",
+    "plan_hash": "VARCHAR(128)",
+    "archive_dir": "VARCHAR(255)",
+    "archive_path": "VARCHAR(255)",
+    "quarantine_dir": "VARCHAR(255)",
+    "request_json": "JSONB",
+    "result_json": "JSONB",
+    "error": "TEXT",
+    "created_at": "TIMESTAMP WITH TIME ZONE",
+    "updated_at": "TIMESTAMP WITH TIME ZONE"
+  },
+  "relations": {
+    "id": "VARCHAR(36)",
+    "source_kind": "VARCHAR(40)",
+    "source_id": "VARCHAR(36)",
+    "relation_type": "VARCHAR(40)",
+    "target_kind": "VARCHAR(40)",
+    "target_id": "VARCHAR(36)",
+    "created_at": "TIMESTAMP WITH TIME ZONE",
+    "updated_at": "TIMESTAMP WITH TIME ZONE"
+  },
+  "services": {
+    "id": "VARCHAR(36)",
+    "slug": "VARCHAR(80)",
+    "title": "VARCHAR(160)",
+    "summary": "TEXT",
+    "system": "VARCHAR(40)",
+    "component_type": "VARCHAR(40)",
+    "lifecycle": "VARCHAR(40)",
+    "owner": "VARCHAR(80)",
+    "criticality": "INTEGER",
+    "status": "VARCHAR(40)",
+    "tags": "JSONB",
+    "metadata_json": "JSONB",
+    "port_base": "INTEGER",
+    "large_port_space": "BOOLEAN",
+    "caddy_protection_enabled": "BOOLEAN",
+    "created_at": "TIMESTAMP WITH TIME ZONE",
+    "updated_at": "TIMESTAMP WITH TIME ZONE"
+  },
+  "sub_services": {
+    "id": "VARCHAR(36)",
+    "slug": "VARCHAR(80)",
+    "title": "VARCHAR(160)",
+    "parent_type": "VARCHAR(40)",
+    "parent_id": "VARCHAR(36)",
+    "status": "VARCHAR(40)",
+    "metadata_json": "JSONB",
+    "caddy_protection_enabled": "BOOLEAN",
+    "created_at": "TIMESTAMP WITH TIME ZONE",
+    "updated_at": "TIMESTAMP WITH TIME ZONE"
+  },
+  "validation_runs": {
+    "id": "VARCHAR(36)",
+    "scope": "VARCHAR(80)",
+    "status": "VARCHAR(40)",
+    "created_at": "TIMESTAMP WITH TIME ZONE",
+    "updated_at": "TIMESTAMP WITH TIME ZONE"
+  },
+  "apis": {
+    "id": "VARCHAR(36)",
+    "service_id": "VARCHAR(36)",
+    "slug": "VARCHAR(80)",
+    "title": "VARCHAR(160)",
+    "api_type": "VARCHAR(40)",
+    "definition_path": "VARCHAR(255)",
+    "created_at": "TIMESTAMP WITH TIME ZONE",
+    "updated_at": "TIMESTAMP WITH TIME ZONE"
+  },
+  "docs": {
+    "id": "VARCHAR(36)",
+    "service_id": "VARCHAR(36)",
+    "doc_type": "VARCHAR(40)",
+    "path": "VARCHAR(255)",
+    "title": "VARCHAR(160)",
+    "created_at": "TIMESTAMP WITH TIME ZONE",
+    "updated_at": "TIMESTAMP WITH TIME ZONE"
+  },
+  "healthchecks": {
+    "id": "VARCHAR(36)",
+    "service_id": "VARCHAR(36)",
+    "check_type": "VARCHAR(40)",
+    "target": "VARCHAR(255)",
+    "expected_status": "INTEGER",
+    "timeout_seconds": "INTEGER",
+    "created_at": "TIMESTAMP WITH TIME ZONE",
+    "updated_at": "TIMESTAMP WITH TIME ZONE"
+  },
+  "ports": {
+    "id": "VARCHAR(36)",
+    "service_id": "VARCHAR(36)",
+    "number": "INTEGER",
+    "protocol": "VARCHAR(16)",
+    "bind": "VARCHAR(64)",
+    "purpose": "VARCHAR(160)",
+    "status": "VARCHAR(40)",
+    "created_at": "TIMESTAMP WITH TIME ZONE",
+    "updated_at": "TIMESTAMP WITH TIME ZONE"
+  },
+  "resources": {
+    "id": "VARCHAR(36)",
+    "service_id": "VARCHAR(36)",
+    "slug": "VARCHAR(80)",
+    "title": "VARCHAR(160)",
+    "resource_type": "VARCHAR(40)",
+    "owner": "VARCHAR(80)",
+    "metadata_json": "JSONB",
+    "created_at": "TIMESTAMP WITH TIME ZONE",
+    "updated_at": "TIMESTAMP WITH TIME ZONE"
+  },
+  "routes": {
+    "id": "VARCHAR(36)",
+    "service_id": "VARCHAR(36)",
+    "subservice_id": "VARCHAR(36)",
+    "parent_type": "VARCHAR(40)",
+    "parent_id": "VARCHAR(36)",
+    "host": "VARCHAR(255)",
+    "path": "VARCHAR(255)",
+    "upstream": "VARCHAR(255)",
+    "tls": "BOOLEAN",
+    "auth_policy": "VARCHAR(80)",
+    "caddy_protection_enabled": "BOOLEAN",
+    "status": "VARCHAR(40)",
+    "created_at": "TIMESTAMP WITH TIME ZONE",
+    "updated_at": "TIMESTAMP WITH TIME ZONE"
+  },
+  "runtimes": {
+    "id": "VARCHAR(36)",
+    "service_id": "VARCHAR(36)",
+    "runtime_type": "VARCHAR(40)",
+    "path": "VARCHAR(255)",
+    "compose_project": "VARCHAR(120)",
+    "systemd_unit": "VARCHAR(120)",
+    "restart_policy": "VARCHAR(80)",
+    "metadata_json": "JSONB",
+    "created_at": "TIMESTAMP WITH TIME ZONE",
+    "updated_at": "TIMESTAMP WITH TIME ZONE"
+  },
+  "secret_refs": {
+    "id": "VARCHAR(36)",
+    "service_id": "VARCHAR(36)",
+    "name": "VARCHAR(120)",
+    "provider": "VARCHAR(40)",
+    "ref": "VARCHAR(255)",
+    "target_env": "VARCHAR(120)",
+    "created_at": "TIMESTAMP WITH TIME ZONE",
+    "updated_at": "TIMESTAMP WITH TIME ZONE"
+  },
+  "skills": {
+    "id": "VARCHAR(36)",
+    "service_id": "VARCHAR(36)",
+    "slug": "VARCHAR(80)",
+    "title": "VARCHAR(160)",
+    "skill_type": "VARCHAR(40)",
+    "path": "VARCHAR(255)",
+    "description": "TEXT",
+    "created_at": "TIMESTAMP WITH TIME ZONE",
+    "updated_at": "TIMESTAMP WITH TIME ZONE"
+  },
+  "validation_results": {
+    "id": "VARCHAR(36)",
+    "run_id": "VARCHAR(36)",
+    "severity": "VARCHAR(20)",
+    "code": "VARCHAR(80)",
+    "message": "TEXT",
+    "entity_kind": "VARCHAR(40)",
+    "entity_id": "VARCHAR(36)",
+    "created_at": "TIMESTAMP WITH TIME ZONE",
+    "updated_at": "TIMESTAMP WITH TIME ZONE"
+  },
+  "skill_items": {
+    "id": "VARCHAR(36)",
+    "skill_id": "VARCHAR(36)",
+    "relative_path": "VARCHAR(255)",
+    "item_type": "VARCHAR(40)",
+    "created_at": "TIMESTAMP WITH TIME ZONE",
+    "updated_at": "TIMESTAMP WITH TIME ZONE"
+  }
+}

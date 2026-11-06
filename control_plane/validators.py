@@ -61,8 +61,6 @@ def _caddy_hosts_from_file(path: Path) -> set[str]:
             continue
         for host in match.group(1).split(","):
             rendered = _render_caddy_host(host).strip()
-            if rendered.startswith("*."):
-                continue
             if rendered and "." in rendered and "{" not in rendered and "$" not in rendered:
                 hosts.add(rendered)
     return hosts
@@ -72,8 +70,8 @@ def configured_caddy_hosts() -> set[str]:
     settings = get_settings()
     files: list[Path] = []
     files.extend(path for path in Path(settings.generated_caddy_dir).glob("*.caddy") if path.name != "auto_cert_zones.caddy")
-    override_dir = Path(settings.selfhost_root) / "infra" / "caddy" / "overrides"
-    files.extend(path for path in override_dir.glob("*.caddy") if ".bak" not in path.name and not path.name.startswith("."))
+    from .routing import override_files
+    files.extend(override_files())
     hosts: set[str] = set()
     for path in files:
         hosts.update(_caddy_hosts_from_file(path))
@@ -130,12 +128,13 @@ def validate_all(db: Session, scope: str = "all") -> list[dict]:
     registered_hosts: set[str] = set()
     for route in db.query(models.Route).all():
         rendered_host = render_domain_value(route.host)
-        registered_hosts.add(rendered_host)
+        from .routing import route_hosts
+        registered_hosts.update(route_hosts(db, route))
         key = (rendered_host, route.path)
         if key in route_keys:
             results.append(_result("fatal", "route.duplicate", f"Duplicate route {rendered_host}{route.path}", "route", route.id))
         route_keys.add(key)
-        if not HOST_RE.match(rendered_host):
+        if not HOST_RE.match(rendered_host.removeprefix("*.")):
             results.append(_result("error", "route.host.invalid", f"Invalid route host: {route.host} -> {rendered_host}", "route", route.id))
         if "." in route.host and not is_domain_template(route.host) and route.host.endswith("marcosudau.com"):
             results.append(_result("warning", "route.host.fixed-target-domain", f"Route uses target domain directly during development: {route.host}", "route", route.id))
@@ -201,6 +200,9 @@ def validate_all(db: Session, scope: str = "all") -> list[dict]:
         if not doc.path.startswith("/"):
             results.append(_result("warning", "doc.path.relative", f"Doc path is relative: {doc.path}", "doc", doc.id))
 
+    from .routing import ownership_findings
+    for item in ownership_findings(db):
+        results.append(_result("fatal", item["code"], item["message"], "route", item["route_id"]))
     return results
 
 
