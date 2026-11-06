@@ -1,0 +1,3 @@
+schema_version: 1
+summary: Operative Steuerung der Selfhost-Infrastruktur
+description: Die Control Plane ist die operative Quelle fuer Service-, Routen-, Runtime- und Validierungsinformationen.

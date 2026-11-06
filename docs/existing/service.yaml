@@ -1,0 +1,75 @@
+schema_version: 1
+service:
+  slug: control-plane
+  name: Control Plane
+  category: core-infrastructure
+  status: active
+lifecycle:
+  archivable: false
+  snapshot_supported: true
+  archive_requires_confirmation: true
+runtime:
+  backend: docker_compose
+  compose_project: control-plane
+  compose_file: /home/marco/selfhost/stacks/services/control-plane/docker-compose.yml
+paths:
+  stack_dir: /home/marco/selfhost/stacks/services/control-plane
+  compose_file: /home/marco/selfhost/stacks/services/control-plane/docker-compose.yml
+  data_dir: /home/marco/selfhost/data/services/control-plane
+  docs_dir: /home/marco/selfhost/docs/services/control-plane
+  app_dir: /home/marco/selfhost/apps/services/control-plane
+  build_area_dir: /home/marco/selfhost_outsourced/build_area/services/control-plane
+operator_permissions:
+  docker_socket: /var/run/docker.sock
+  mounted_roots:
+  - /home/marco/selfhost
+  - /home/marco/selfhost_outsourced
+  reason: Service-Lifecycle execute operations need to stop/start Docker Compose projects and move service-owned paths.
+dependencies:
+  hard: []
+  optional: []
+cp_metadata:
+  id: 1ea1b84a-7803-4602-89a6-c2ea1f0af030
+  summary: Operative Control Plane API
+  system: services
+  component_type: service
+  lifecycle_stage: production
+  owner: marco
+  criticality: 1
+  tags:
+  - control-plane
+  - api
+  - mcp
+  large_port_space: false
+  caddy_protection_enabled: true
+  created_at: '2026-05-25T15:07:31.328416Z'
+  updated_at: '2026-07-01T17:41:57.452089Z'
+routes:
+- host: api.control-plane.{base_domain}
+  rendered_host: api.control-plane.marcosudau.com
+  path: /
+  upstream: http://127.0.0.1:8765
+  tls: true
+  auth_policy: caddy_schutz
+  status: active
+- host: control-plane.{base_domain}
+  rendered_host: control-plane.marcosudau.com
+  path: /
+  upstream: http://127.0.0.1:8765
+  tls: true
+  auth_policy: caddy_schutz
+  status: active
+- host: ctlpln.{base_domain}
+  rendered_host: ctlpln.marcosudau.com
+  path: /
+  upstream: http://127.0.0.1:8765
+  tls: true
+  auth_policy: caddy_schutz
+  status: active
+- host: mcp.control-plane.{base_domain}
+  rendered_host: mcp.control-plane.marcosudau.com
+  path: /
+  upstream: http://127.0.0.1:8765
+  tls: true
+  auth_policy: caddy_schutz
+  status: active

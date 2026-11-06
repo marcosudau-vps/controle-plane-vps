@@ -1,0 +1,58 @@
+x-default-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  control-plane-postgres:
+    image: postgres:16-alpine
+    container_name: control-plane-postgres
+    restart: unless-stopped
+    mem_limit: 384m
+    cpus: 0.5
+    pids_limit: 128
+    logging: *default-logging
+    env_file:
+      - /home/marco/selfhost/secrets/control-plane-postgres.env
+    volumes:
+      - /home/marco/selfhost/data/services/control-plane/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U selfhost_control -d selfhost_control"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  control-plane:
+    build:
+      context: /home/marco/selfhost_outsourced/build_area/services/control-plane/workdir
+      dockerfile: Dockerfile
+    image: selfhost/control-plane:build-area
+    container_name: control-plane
+    restart: unless-stopped
+    mem_limit: 384m
+    cpus: 0.5
+    pids_limit: 128
+    logging: *default-logging
+    depends_on:
+      control-plane-postgres:
+        condition: service_healthy
+    env_file:
+      - /home/marco/selfhost/secrets/control-plane.env
+      - /home/marco/selfhost/secrets/caddy.env
+    ports:
+      - "127.0.0.1:${CONTROL_PLANE_HOST_PORT:-8766}:8765"
+    volumes:
+      - /home/marco/selfhost:/home/marco/selfhost
+      - /home/marco/selfhost_outsourced:/home/marco/selfhost_outsourced
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /home/marco/selfhost/stacks/services/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - /home/marco/selfhost/stacks/services/caddy/overrides:/etc/caddy/overrides:ro
+      - /home/marco/selfhost/data/services/control-plane/generated/caddy:/etc/caddy/generated
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8765/health', timeout=3).read()"]
+      interval: 60s
+      timeout: 5s
+      retries: 5
+      start_period: 20s

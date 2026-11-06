@@ -1,0 +1,39 @@
+[project]
+name = "control-plane"
+version = "0.1.0"
+description = "Control Plane API and CLI"
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi>=0.115.0",
+  "uvicorn[standard]>=0.30.0",
+  "sqlalchemy>=2.0.30",
+  "psycopg[binary]>=3.2.0",
+  "pydantic-settings>=2.4.0",
+  "typer>=0.12.0",
+  "rich>=13.7.0",
+  "httpx>=0.27.0",
+  "pyyaml>=6.0.0",
+  "mcp>=1.0.0",
+]
+
+[project.optional-dependencies]
+test = [
+  "pytest>=8.2.0",
+]
+
+[project.scripts]
+control-plane = "control_plane.cli:app"
+selfhostctl = "control_plane.cli:app"
+control-plane-api = "control_plane.main:run"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.setuptools.packages.find]
+include = ["control_plane*"]
+exclude = ["tests*", "migrations*"]
+
+[build-system]
+requires = ["setuptools>=69.0"]
+build-backend = "setuptools.build_meta"
