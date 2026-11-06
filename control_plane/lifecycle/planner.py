@@ -48,7 +48,14 @@ def db_inventory(db: Session, slug: str) -> dict[str, Any]:
     service = db.query(models.Service).filter(models.Service.slug == slug).one_or_none()
     if not service:
         return {"service": None, "routes": [], "ports": [], "runtimes": [], "resources": [], "apis": [], "skills": [], "secret_refs": [], "docs": [], "healthchecks": [], "sub_services": []}
+    runtime_ids = [r.id for r in service.runtimes]
+    route_ids = [r.id for r in service.routes]
     return {
+        "profiles": [object_dict(x) for x in db.query(models.ServiceProfile).filter_by(service_id=service.id)],
+        "aliases": [object_dict(x) for x in db.query(models.ServiceAlias).filter_by(service_id=service.id)],
+        "deployment_sources": [object_dict(x) for x in db.query(models.DeploymentSource).filter(models.DeploymentSource.runtime_id.in_(runtime_ids))],
+        "route_options": [object_dict(x) for x in db.query(models.RouteOptions).filter(models.RouteOptions.route_id.in_(route_ids))],
+        "policies": [object_dict(x) for x in db.query(models.PolicyRule).filter_by(service_id=service.id)],
         "service": object_dict(service),
         "routes": [object_dict(item) for item in service.routes],
         "ports": [object_dict(item) for item in service.ports],
@@ -138,7 +145,13 @@ def build_service_plan(db: Session, slug: str, action: str, settings: Settings |
     manifest = load_manifest(slug, settings=settings)
     lifecycle = manifest.get("lifecycle") or {}
     compose_check = compose_config_check(Path(manifest["runtime"]["compose_file"]))
-    if action == "archive" and not lifecycle.get("archivable"):
+    from control_plane.contracts import protected, CORE_SERVICES
+    service = db.query(models.Service).filter_by(slug=slug).one_or_none()
+    core_protected = slug in CORE_SERVICES or (service is not None and protected(db, service))
+    if action == "archive" and core_protected:
+        blocked = True
+        block_reason = "protected core service cannot be archived"
+    elif action == "archive" and not lifecycle.get("archivable"):
         blocked = True
         block_reason = "service is not archivable"
     elif action == "snapshot" and not lifecycle.get("snapshot_supported"):

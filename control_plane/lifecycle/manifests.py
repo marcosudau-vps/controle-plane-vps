@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from pathlib import Path
 from typing import Any
 
@@ -13,6 +14,8 @@ class ManifestError(ValueError):
 
 
 def manifest_path(slug: str, settings: Settings | None = None) -> Path:
+    if not re.fullmatch(r"[a-z0-9][a-z0-9-]{1,78}[a-z0-9]", slug):
+        raise ManifestError("invalid service slug")
     settings = settings or get_settings()
     return Path(settings.selfhost_root) / "stacks" / "services" / slug / "service.yaml"
 
@@ -67,6 +70,9 @@ def validate_manifest(slug: str, data: dict[str, Any], path: Path, settings: Set
         raise ManifestError(f"runtime.compose_project must equal slug {slug}: {path}")
 
     compose_file = Path(str(runtime.get("compose_file") or paths.get("compose_file") or ""))
+    stack_root = (Path(settings.selfhost_root) / "stacks" / "services" / slug).resolve()
+    if stack_root not in compose_file.resolve().parents:
+        raise ManifestError("compose file outside service stack directory")
     if not compose_file.exists():
         raise ManifestError(f"compose file not found: {compose_file}")
 
@@ -74,7 +80,12 @@ def validate_manifest(slug: str, data: dict[str, Any], path: Path, settings: Set
         Path(settings.selfhost_root).resolve(),
         Path(settings.outsourced_build_area_root).resolve(),
     ]
+    expected = {k: Path(settings.selfhost_root) / folder / "services" / slug for k,folder in {"stack_dir":"stacks", "compose_file":"stacks", "data_dir":"data", "docs_dir":"docs", "app_dir":"apps", "config_file":"stacks", "config_files":"stacks"}.items()}
+    expected["build_area_dir"] = Path(settings.outsourced_build_area_root) / "services" / slug
+    expected["env_files"] = Path(settings.selfhost_root) / "secrets"
     for key, value in paths.items():
+        if key not in expected:
+            raise ManifestError("unknown lifecycle path role")
         values = value if isinstance(value, list) else [value]
         for item in values:
             if item is None:
@@ -83,6 +94,9 @@ def validate_manifest(slug: str, data: dict[str, Any], path: Path, settings: Set
             if not candidate.is_absolute():
                 raise ManifestError(f"manifest path must be absolute for paths.{key}: {item}")
             resolved = candidate.resolve(strict=False)
+            role_root = expected[key].resolve()
+            if not (resolved == role_root or role_root in resolved.parents):
+                raise ManifestError(f"path escapes service ownership: {key}")
             if not any(resolved == root or root in resolved.parents for root in allowed_roots):
                 raise ManifestError(f"manifest path outside allowed roots for paths.{key}: {item}")
 
